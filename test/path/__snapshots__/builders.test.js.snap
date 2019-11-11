@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Path Builders Tests #pluralPathBuilder should return the proper path 1`] = `"/tests/base/path/tests"`;
+
+exports[`Path Builders Tests #singularPathBuilder should return the proper path 1`] = `"/tests/base/path/tests/{identifier}"`;

@@ -1,0 +1,7 @@
+version: "3.7"
+
+services:
+  mongo:
+    image: bitnami/mongodb:4.2-debian-9
+    ports:
+      - 27017:27017

@@ -1,0 +1,42 @@
+version: 2.1
+
+references:
+  js_deps_cache_key: &js_deps_cache_key v1-dependency-{{ checksum "package-lock.json" }}
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - *js_deps_cache_key
+      - run:
+          name: Install dependencies.
+          command: npm i
+      - run:
+          name: Check code style
+          command: echo "add code linter"
+      - save_cache:
+          paths:
+            - node_modules
+          key: *js_deps_cache_key
+  test:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - *js_deps_cache_key
+      - run:
+          name: Execute unit tests.
+          command: npm run test:ci
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - build
+      - test
