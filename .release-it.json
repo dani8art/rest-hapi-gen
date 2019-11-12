@@ -1,0 +1,24 @@
+{
+  "non-interactive": true,
+  "preReleaseId": "next",
+  "git": {
+    "commitMessage": "chore: %s [ci skip]",
+    "tagAnnotation": "%s",
+    "requireUpstream": false,
+    "requireCleanWorkingDir": false
+  },
+  "npm": {
+    "publish": false
+  },
+  "github": {
+    "release": true,
+    "releaseName": "%s",
+    "tokenRef": "GITHUB_TOKEN",
+    "draft": false
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": "angular"
+    }
+  }
+}
