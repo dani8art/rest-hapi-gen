@@ -1,0 +1,6 @@
+.circleci/
+coverage/
+dev/
+test/
+.release-it.json
+docker-compose.yml
