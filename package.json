@@ -1,9 +1,10 @@
 {
   "name": "rest-hapi-gen",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
+    "release": "release-it",
     "start": "nodemon dev/app.js",
     "test": "jest --watchAll --coverage",
     "test:ci": "jest --coverage --coverageReporters=text-summary"
@@ -19,7 +20,8 @@
   "jest": {
     "testEnvironment": "node",
     "watchPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "/dev/"
     ],
     "coverageReporters": [
       "lcov",
@@ -27,8 +29,8 @@
       "text-summary"
     ]
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Daniel Arteaga <dani8art.da@gmail.com> (https://darteaga.com)",
+  "license": "MIT",
   "dependencies": {
     "@hapi/boom": "^8.0.1",
     "@hapi/hapi": "^18.4.0",
@@ -42,7 +44,11 @@
     "mongoose": "^5.7.6"
   },
   "devDependencies": {
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
+    "@release-it/conventional-changelog": "^1.1.0",
     "jest": "^24.9.0",
-    "nodemon": "^1.19.4"
+    "nodemon": "^1.19.4",
+    "release-it": "^12.4.3"
   }
 }

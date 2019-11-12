@@ -3,6 +3,14 @@ version: 2.1
 references:
   js_deps_cache_key: &js_deps_cache_key v1-dependency-{{ checksum "package-lock.json" }}
 
+commands:
+  git_authoring:
+    description: Authoring git commit.
+    steps:
+      - run: git config --global push.default matching
+      - run: git config --global user.email "totem-bot@darteaga.com"
+      - run: git config --global user.name "Totem Bot"
+
 jobs:
   build:
     docker:
@@ -33,6 +41,34 @@ jobs:
       - run:
           name: Execute unit tests.
           command: npm run test:ci
+
+  release:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - git_authoring
+      - restore_cache:
+          keys:
+            - *js_deps_cache_key
+      - run:
+          name: Bump and publish the new version.
+          command: npm run release
+
+  npm_publish:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - run:
+          name: Get latest changes from the repository.
+          command: git pull
+      - run:
+          name: Authenticate against npm registry.
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ./.npmrc
+      - run:
+          name: Publish RESTHapi Gen package to npm.
+          command: npm publish
 
 workflows:
   version: 2
