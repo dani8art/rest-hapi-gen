@@ -1,0 +1,26 @@
+templates:
+  - .release-it.json
+  - .circleci/config.yml
+  - .circleci/skip-when-release
+scripts:
+  beforePlant: echo "execute before plant circleci seed"
+  afterPlant: >-
+    npm i --save-dev @commitlint/cli@^8.2.0
+    @commitlint/config-conventional@^8.2.0
+    @release-it/conventional-changelog@^1.1.0
+values:
+  artifact: circleci
+  git:
+    name: Totem Bot
+    email: totem-bot@darteaga.com
+  cache:
+    - node_modules
+  release:
+    enabled: false
+  deployment:
+    enabled: false
+    type: docker
+    docker:
+      image: darteaga/pets
+      additionalTags:
+        - latest

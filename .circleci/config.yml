@@ -2,6 +2,7 @@ version: 2.1
 
 references:
   js_deps_cache_key: &js_deps_cache_key v1-dependency-{{ checksum "package-lock.json" }}
+  js_deps_backup_key: &js_deps_backup_key v1-dependency-
 
 master_only: &master_only
   filters:
@@ -25,27 +26,25 @@ jobs:
       - restore_cache:
           keys:
             - *js_deps_cache_key
-      - run:
-          name: Install dependencies.
-          command: npm i
-      - run:
-          name: Check code style
-          command: echo "add code linter"
+            - *js_deps_backup_key
+      - run: npm ci
       - save_cache:
           paths:
             - node_modules
           key: *js_deps_cache_key
+
   test:
     docker:
       - image: circleci/node:12
+    environment:
+      NODE_ENV: ci
     steps:
       - checkout
       - restore_cache:
           keys:
             - *js_deps_cache_key
-      - run:
-          name: Execute unit tests.
-          command: npm run test:ci
+            - *js_deps_backup_key
+      - run: npm run test:ci
 
   release:
     docker:
@@ -56,24 +55,18 @@ jobs:
       - restore_cache:
           keys:
             - *js_deps_cache_key
-      - run:
-          name: Bump and publish the new version.
-          command: npm run release
+            - *js_deps_backup_key
+      - run: ./.circleci/skip-when-release npm run release
 
-  npm_publish:
+  deploy:
     docker:
       - image: circleci/node:12
     steps:
       - checkout
       - run:
-          name: Get latest changes from the repository.
-          command: git pull
-      - run:
           name: Authenticate against npm registry.
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ./.npmrc
-      - run:
-          name: Publish RESTHapi Gen package to npm.
-          command: npm publish
+      - run: npm publish
 
 workflows:
   version: 2
@@ -87,7 +80,11 @@ workflows:
           <<: *master_only
           requires:
             - test
-      - npm_publish:
-          <<: *master_only
-          requires:
-            - release
+  delivering:
+    jobs:
+      - deploy:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/

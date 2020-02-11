@@ -1,0 +1,161 @@
+version: 2.1
+{{#if deployment.enabled}}
+{{#with deployment.s3}}
+orbs:
+  aws-s3: circleci/aws-s3@1.0.11
+{{/with}}
+{{/if}}
+
+references:
+  js_deps_cache_key: &js_deps_cache_key v1-dependency-\{{ checksum "package-lock.json" }}
+  js_deps_backup_key: &js_deps_backup_key v1-dependency-
+
+master_only: &master_only
+  filters:
+    branches:
+      only: master
+
+commands:
+  git_authoring:
+    description: Authoring git commit.
+    steps:
+      - run: git config --global push.default matching
+      - run: git config --global user.email "{{git.email}}"
+      - run: git config --global user.name "{{git.name}}"
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - *js_deps_cache_key
+            - *js_deps_backup_key
+      - run: npm ci
+      {{#with build}}
+      {{#if cmd}}
+      - run: {{cmd}}
+      {{/if}}
+      {{/with}}
+      - save_cache:
+          paths:
+            {{#each cache}}
+            - {{this}}
+            {{/each}}
+          key: *js_deps_cache_key
+
+  test:
+    docker:
+      - image: circleci/node:12
+    {{#with test}}
+    {{#each dependencies}}
+      - image: {{this}}
+    {{/each}}
+    {{/with}}
+    environment:
+      NODE_ENV: ci
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - *js_deps_cache_key
+            - *js_deps_backup_key
+      {{#with test}}
+      {{#if cmd}}
+      - run: {{cmd}}
+      {{else}}
+      - run: npm test
+      {{/if}}
+      {{else}}
+      - run: npm test
+      {{/with}}
+
+  {{#if release.enabled}}
+  release:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - git_authoring
+      - restore_cache:
+          keys:
+            - *js_deps_cache_key
+            - *js_deps_backup_key
+      - run: ./.circleci/skip-when-release npm run release
+  {{/if}}
+
+  {{#if deployment.enabled}}
+  deploy:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+    {{#if deployment.type "===" "docker"}}
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - *js_deps_cache_key
+            - *js_deps_backup_key
+      - run: |
+        {{#if release.enabled}}
+          MAIN_TAG="$(npm run --silent get:version)"
+        {{else}}
+          MAIN_TAG="$CIRCLE_BRANCH"
+        {{/if}}
+          echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+          docker build -t {{deployment.docker.image}}:$MAIN_TAG .
+          docker push {{deployment.docker.image}}:$MAIN_TAG
+        {{#each deployment.docker.additionalTags}}
+          docker tag {{@root.deployment.docker.image}}:$MAIN_TAG {{@root.deployment.docker.image}}:{{this}}
+          docker push {{@root.deployment.docker.image}}:{{this}}
+        {{/each}}
+    {{/if}}
+    {{#if deployment.type "===" "npm"}}
+      - run:
+          name: Authenticate against npm registry.
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ./.npmrc
+      - run: npm publish
+    {{/if}}
+    {{#if deployment.type "===" "s3"}}
+      - aws-s3/sync:
+          from: {{deployment.s3.bucket}}
+          to: "s3://stable-seeds/{{artifact}}/{{deployment.s3.bucket}}"
+          overwrite: true
+          arguments: |
+            --acl public-read
+      {{#each deployment.s3.files}}
+      - aws-s3/copy:
+          from: {{this}}
+          to: "s3://stable-seeds/{{@root.artifact}}/{{this}}"
+          arguments: |
+            --acl public-read
+      {{/each}}
+    {{/if}}
+{{/if}}
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      {{#if release.enabled}}
+      - release:
+          <<: *master_only
+          requires:
+            - test
+      {{/if}}
+{{#if deployment.enabled}}
+  delivering:
+    jobs:
+      - deploy:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+{{/if}}

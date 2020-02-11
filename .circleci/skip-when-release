@@ -1,0 +1,22 @@
+#!/bin/bash
+
+semVerNumberRegexp="[0-9]+\.[0-9]+\.[0-9]+(-.*)?"
+
+commad=$@
+
+if ! git status &> /dev/null ; then
+  echo "[ERROR]: Current directory is not a git repository or git command is not installed."
+  exit 1
+fi
+
+gitCommitMessage=$(git log --format=%B -n 1)
+
+echo "[INFO]: Commit message: \"$gitCommitMessage\""
+
+if [[ "$gitCommitMessage" =~ $semVerNumberRegexp ]]; then
+  echo "[INFO]: Release commit, skipping command."
+  exit 0
+else
+  echo "[INFO]: No release commit, executing command."
+  exec $commad
+fi
