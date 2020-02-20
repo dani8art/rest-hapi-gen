@@ -4,14 +4,17 @@
 
 > RESTHapi Gen is a [@hapijs/hapi](https://github.com/hapijs/hapi) plugin which generates a CRUD RESTful API from a given [@hapijs/joi](https://github.com/hapijs/joi) model.
 
-### Support
+### Compatibility
 
-- Use `Hapi >= 18` and `Joi >= 15 < 16`
+| RESTHapi Gen version | Hapi version | Joi Version |
+| -------------------- | ------------ | ----------- |
+| `1.x.x`              | `19.x.x`     | `17.x.x`    |
+| `0.x.x`              | `18.x.x`     | `15.x.x`    |
 
 ## TL;DR;
 
 ```
-npm i @hapi/hapi @hapi/joi mongoose rest-hapi-gen
+$ npm i @hapi/hapi @hapi/joi mongoose rest-hapi-gen
 ```
 
 ```javascript
@@ -51,13 +54,15 @@ const RestHapiGen = require('rest-hapi-gen');
 | collectionName | `string` | `Required` Name for the collection that is created.                        |
 | schema         | `Joi`    | `Required` Joi schema for the collection that is created.                  |
 
-## Deploy mongo using docker
+## Deploy MongoDB
+
+**Docker**
 
 ```shell
-docker run --rm --name myMongo -p 27017:27017 mongo
+$ docker run -d --rm --name mymongo -p 27017:27017 mongo
 ```
 
-### docker-compose
+**Docker Compose**
 
 ```yaml
 version: '3.7'
@@ -70,7 +75,8 @@ services:
 ```
 
 ```shell
-docker-compose up
+$ curl -sSL https://raw.githubusercontent.com/dani8art/rest-hapi-gen/master/docker-compose.yaml > docker-compose.yaml
+$ docker-compose up -d
 ```
 
 ## License

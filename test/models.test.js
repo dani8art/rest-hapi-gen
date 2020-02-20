@@ -1,9 +1,13 @@
-jest.mock('mongoose');
-jest.mock('joigoose');
+jest.mock('mongoose', () => {
+  return { model: jest.fn() };
+});
+jest.mock('joigoose', () => {
+  return jest.fn().mockReturnValue({ convert: jest.fn().mockReturnValue('mongoSchema') });
+});
 
 const Joi = require('@hapi/joi');
 const mongoose = require('mongoose');
-const joigoose = require('joigoose').mockReturnValue({ convert: jest.fn().mockReturnValue('mongoSchema') })(mongoose);
+const joigoose = require('joigoose')(mongoose);
 
 const ObjectId = jest.requireActual('mongoose').Types.ObjectId;
 
@@ -49,22 +53,14 @@ describe('Models Utils Tests', () => {
 
       const extendedSchema = models.buildResourceSchema(collectionName, schema);
 
-      expect(extendedSchema.validate(validObject).error).toBe(null);
+      expect(extendedSchema.validate(validObject).error).toBeFalsy();
       expect(extendedSchema.validate(idNotValidObject).error.message).toBe(
-        'child "_id" fails because ["_id" with value "hello" fails to match the valid mongo id pattern]'
+        '"_id" with value "hello" fails to match the required pattern: /^[0-9a-fA-F]{24}$/'
       );
-      expect(extendedSchema.validate(missingIdNotValidObject).error.message).toBe(
-        'child "_id" fails because ["_id" is required]'
-      );
-      expect(extendedSchema.validate(vNotValidObject).error.message).toBe(
-        'child "__v" fails because ["__v" must be a number]'
-      );
-      expect(extendedSchema.validate(missingVNotValidObject).error.message).toBe(
-        'child "__v" fails because ["__v" is required]'
-      );
-      expect(extendedSchema.validate(linksNotValidObject).error.message).toBe(
-        'child "_links" fails because ["_links" is required]'
-      );
+      expect(extendedSchema.validate(missingIdNotValidObject).error.message).toBe('"_id" is required');
+      expect(extendedSchema.validate(vNotValidObject).error.message).toBe('"__v" must be a number');
+      expect(extendedSchema.validate(missingVNotValidObject).error.message).toBe('"__v" is required');
+      expect(extendedSchema.validate(linksNotValidObject).error.message).toBe('"_links" is required');
     });
   });
 
@@ -87,13 +83,9 @@ describe('Models Utils Tests', () => {
 
       const extendedSchema = models.buildCollectionSchema(collectionName, schema);
 
-      expect(extendedSchema.validate(validObject).error).toBe(null);
-      expect(extendedSchema.validate(linksNotValidObject).error.message).toBe(
-        'child "_links" fails because [child "self" fails because ["self" must be an object]]'
-      );
-      expect(extendedSchema.validate(embeddedNotValidObject).error.message).toBe(
-        'child "_embedded" fails because ["hello" is not allowed]'
-      );
+      expect(extendedSchema.validate(validObject).error).toBe(undefined);
+      expect(extendedSchema.validate(linksNotValidObject).error.message).toBe('"_links.self" must be of type object');
+      expect(extendedSchema.validate(embeddedNotValidObject).error.message).toBe('"_embedded.hello" is not allowed');
     });
   });
 });
