@@ -40,23 +40,23 @@
   "author": "Daniel Arteaga <dani8art.da@gmail.com> (https://darteaga.com)",
   "license": "MIT",
   "dependencies": {
-    "@hapi/boom": "^8.0.1",
-    "@hapi/hapi": "^18.4.0",
-    "@hapi/inert": "^5.2.2",
-    "@hapi/joi": "^15.0.0",
-    "@hapi/vision": "^5.5.4",
-    "@wegolook/joi-objectid": "^2.3.1",
-    "hapi-swagger": "^10.2.0",
+    "@hapi/boom": "^9.0.0",
+    "@hapi/joi": "^17.1.0",
     "joi-objectid": "^3.0.1",
-    "joigoose": "^4.0.8",
-    "mongoose": "^5.7.6"
+    "joigoose": "^7.0.0",
+    "mongoose": "^5.9.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
     "@release-it/conventional-changelog": "^1.1.0",
-    "jest": "^24.9.0",
+    "@hapi/hapi": "^19.1.1",
+    "@hapi/hoek": "^9.0.3",
+    "@hapi/inert": "^6.0.1",
+    "@hapi/vision": "^6.0.0",
+    "hapi-swagger": "^12.1.0",
+    "jest": "^25.1.0",
     "nodemon": "^1.19.4",
-    "release-it": "^12.4.3"
+    "release-it": "^12.5.0"
   }
 }

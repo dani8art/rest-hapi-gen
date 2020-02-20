@@ -4,10 +4,11 @@ jest.mock('joi-objectid');
 const Joi = require('@hapi/joi');
 const builders = require('../../lib/validation/builders');
 
+const JoiRequiredMock = jest.fn().mockReturnValue('required');
 const JoiCommonMock = mockType => {
   return {
     mockType,
-    required: jest.fn().mockReturnValue('required')
+    required: JoiRequiredMock
   };
 };
 Joi.object.mockImplementation(object => {
@@ -29,10 +30,10 @@ describe('Validation Builders Tests', () => {
   });
 
   it('#getResourceValidationBuilder should return empty object', () => {
-    const expectedValidation = { params: { identifier: Joi.objectId() } };
+    const expectedValidation = { params: Joi.object({ identifier: Joi.objectId() }) };
     const actualValidation = builders.getResourceValidationBuilder(schema);
 
-    expect(actualValidation).toStrictEqual(expectedValidation);
+    expect(actualValidation).toEqual(expectedValidation);
   });
 
   it('#createResourceValidationBuilder should return payload validation', () => {
@@ -43,16 +44,16 @@ describe('Validation Builders Tests', () => {
   });
 
   it('#updateResourceValidationBuilder should return payload and identifier validation', () => {
-    const expectedValidation = { payload: schema, params: { identifier: Joi.objectId() } };
+    const expectedValidation = { payload: schema, params: Joi.object({ identifier: Joi.objectId() }) };
     const actualValidation = builders.updateResourceValidationBuilder(schema);
 
-    expect(actualValidation).toStrictEqual(expectedValidation);
+    expect(actualValidation).toEqual(expectedValidation);
   });
 
   it('#deleteResourceValidationBuilder should return identifier validation', () => {
-    const expectedValidation = { params: { identifier: Joi.objectId() } };
+    const expectedValidation = { params: Joi.object({ identifier: Joi.objectId() }) };
     const actualValidation = builders.deleteResourceValidationBuilder(schema);
 
-    expect(actualValidation).toStrictEqual(expectedValidation);
+    expect(actualValidation).toEqual(expectedValidation);
   });
 });
