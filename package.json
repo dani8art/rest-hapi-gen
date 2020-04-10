@@ -49,14 +49,14 @@
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
-    "@release-it/conventional-changelog": "^1.1.0",
     "@hapi/hapi": "^19.1.1",
     "@hapi/hoek": "^9.0.3",
     "@hapi/inert": "^6.0.1",
     "@hapi/vision": "^6.0.0",
+    "@release-it/conventional-changelog": "^1.1.0",
     "hapi-swagger": "^12.1.0",
     "jest": "^25.1.0",
-    "nodemon": "^1.19.4",
+    "nodemon": "^2.0.3",
     "release-it": "^12.5.0"
   }
 }
