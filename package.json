@@ -1,6 +1,6 @@
 {
   "name": "rest-hapi-gen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "RESTHapi Gen is a @hapijs/hapi plugin which generates a CRUD RESTful API from a given @hapijs/joi model.",
   "keywords": [
     "hapi",
