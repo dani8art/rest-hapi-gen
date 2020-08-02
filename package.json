@@ -12,7 +12,7 @@
   ],
   "main": "lib/index.js",
   "scripts": {
-    "release": "release-it",
+    "release": "release-it --ci",
     "start": "nodemon dev/app.js",
     "test": "jest --watchAll --coverage",
     "test:ci": "jest --coverage --coverageReporters=text-summary"
@@ -47,16 +47,16 @@
     "mongoose": "^5.9.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-conventional": "^9.1.1",
     "@hapi/hapi": "^19.1.1",
     "@hapi/hoek": "^9.0.3",
     "@hapi/inert": "^6.0.1",
     "@hapi/vision": "^6.0.0",
-    "@release-it/conventional-changelog": "^1.1.0",
+    "@release-it/conventional-changelog": "^1.1.4",
     "hapi-swagger": "^12.1.0",
     "jest": "^25.1.0",
     "nodemon": "^2.0.3",
-    "release-it": "^12.5.0"
+    "release-it": "^13.6.6"
   }
 }
