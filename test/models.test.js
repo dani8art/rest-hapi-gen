@@ -5,7 +5,7 @@ jest.mock('joigoose', () => {
   return jest.fn().mockReturnValue({ convert: jest.fn().mockReturnValue('mongoSchema') });
 });
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const mongoose = require('mongoose');
 const joigoose = require('joigoose')(mongoose);
 

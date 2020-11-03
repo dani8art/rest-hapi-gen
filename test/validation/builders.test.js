@@ -1,7 +1,7 @@
-jest.mock('@hapi/joi');
-jest.mock('joi-objectid');
+jest.mock('joi');
+jest.mock('../../lib/joi-object-id');
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const builders = require('../../lib/validation/builders');
 
 const JoiRequiredMock = jest.fn().mockReturnValue('required');

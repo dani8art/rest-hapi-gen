@@ -14,12 +14,12 @@
 ## TL;DR;
 
 ```
-$ npm i @hapi/hapi @hapi/joi mongoose rest-hapi-gen
+$ npm i @hapi/hapi joi mongoose rest-hapi-gen
 ```
 
 ```javascript
 const Hapi = require('@hapi/hapi');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const Mongoose = require('mongoose');
 
 const RestHapiGen = require('rest-hapi-gen');
@@ -33,10 +33,8 @@ const RestHapiGen = require('rest-hapi-gen');
     collectionName: 'pets',
     schema: Joi.object({
       name: Joi.string().required(),
-      tags: Joi.array()
-        .items(Joi.string())
-        .default([])
-    })
+      tags: Joi.array().items(Joi.string()).default([]),
+    }),
   };
 
   await server.register([{ plugin: RestHapiGen, options: petsCollectionConf }]);
