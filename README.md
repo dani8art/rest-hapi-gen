@@ -6,10 +6,11 @@
 
 ### Compatibility
 
-| RESTHapi Gen version | Hapi version | Joi Version |
-| -------------------- | ------------ | ----------- |
-| `1.x.x`              | `19.x.x`     | `17.x.x`    |
-| `0.x.x`              | `18.x.x`     | `15.x.x`    |
+| RESTHapi Gen version              | Hapi version | Joi Version                                                                                   |
+|-----------------------------------|--------------|-----------------------------------------------------------------------------------------------|
+| `2.x.x`                           | `20.x.x`     | `joi^17.x.x`                                                                                  |
+| `1.x.x`                           | `19.x.x`     | `@hapi/joi^17.x.x`                                                                            |
+| `0.x.x`                           | `18.x.x`     | `@hapi/joi^15.x.x`                                                                            |
 
 ## TL;DR;
 
@@ -46,11 +47,58 @@ const RestHapiGen = require('rest-hapi-gen');
 
 ## Plugin configuration
 
-| Option         | Type     | Description                                                                |
-| -------------- | -------- | -------------------------------------------------------------------------- |
-| basePath       | `string` | `Optional` Base path where the CRUD endpoints are attached. Default: `'/'` |
-| collectionName | `string` | `Required` Name for the collection that is created.                        |
-| schema         | `Joi`    | `Required` Joi schema for the collection that is created.                  |
+| Option                            | Type         | Description                                                                                   |
+|-----------------------------------|--------------|-----------------------------------------------------------------------------------------------|
+| basePath                          | `string`     | `Optional` Base path where the CRUD endpoints are attached. Default: `'/'`                    |
+| collectionName                    | `string`     | `Required` Name for the collection that is created.                                           |
+| schema                            | `Joi`        | `Required` Joi schema for the collection that is created.                                     |
+| overrides.actions.GET_COLLECTION  | `Function`   | `Optional` async function that will overrides the default handler for GET_COLLECTION action.  |
+| overrides.actions.GET_RESOURCE    | `Function`   | `Optional` async function that will overrides the default handler for GET_RESOURCE action.    |
+| overrides.actions.CREATE_RESOURCE | `Function`   | `Optional` async function that will overrides the default handler for CREATE_RESOURCE action. |
+| overrides.actions.UPDATE_RESOURCE | `Function`   | `Optional` async function that will overrides the default handler for UPDATE_RESOURCE action. |
+| overrides.actions.DELETE_RESOURCE | `Function`   | `Optional` async function that will overrides the default handler for DELETE_RESOURCE action. |
+
+### Override an action
+
+If an action needs to be overrided, you must provide an `async function` that will be executed instead of the default one. This function will receive three args: `request` that will be a @hapijs [request object](https://hapi.dev/api/?v=20.0.2#request), `h` that will be a @hapijs [request toolkit](https://hapi.dev/api/?v=20.0.2#response-toolkit) and a `model` that will be a [mongoose model](https://mongoosejs.com/docs/models.html) base on the given schema.
+
+> NOTE: Your custom function must return an object that must to be valid against the **Joi** schema otherwise the server will return an internal server error.
+
+```js
+...
+const { ActionType } = RestHapiGen;
+...
+  const petsCollectionConf = {
+    collectionName: 'pets',
+    schema: Joi.object({
+      name: Joi.string().required(),
+      tags: Joi.array().items(Joi.string()).default([])
+    }),
+    // Override actions
+    overrides: {
+      actions: {
+        // Override GET collection action
+        [ActionType.GET_COLLECTION]: async (request, h, model) => {
+          return await model.find();
+        },
+      },
+    },
+  };
+...
+```
+
+In addition, you could configure Hapi server adding `debug.request` so you can see schema validation errors, to do so you must apply the following configuration to your Hapi server
+
+```js
+...
+const server = Hapi.server({
+  port: 4000,
+  debug: {
+    request: ['*'],
+  },
+});
+...
+```
 
 ## Deploy MongoDB
 

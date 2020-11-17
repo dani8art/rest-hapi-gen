@@ -6,13 +6,14 @@ const Joi = require('joi');
 const HapiSwagger = require('hapi-swagger');
 const Pack = require('../package');
 
-const RestHapiGen = require('../lib/rest-hapi-gen');
+const RestHapiGen = require('../lib/index');
+const { ActionType } = RestHapiGen;
 
 const init = async () => {
   await Mongoose.connect('mongodb://localhost:27017/testdb', { useNewUrlParser: true, useUnifiedTopology: true });
 
   const server = Hapi.server({
-    port: 4000
+    port: 4000,
   });
 
   const hapiSwaggerConf = {
@@ -34,7 +35,16 @@ const init = async () => {
       tags: Joi.array()
         .items(Joi.string())
         .default([])
-    })
+    }),
+    // // You can override actions
+    // overrides: {
+    //   actions: {
+    //     // Override GET collection action
+    //     [ActionType.GET_COLLECTION]: async (request, h, model) => {
+    //       return await model.find();
+    //     },
+    //   },
+    // },
   };
 
   await server.register([
