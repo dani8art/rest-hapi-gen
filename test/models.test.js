@@ -26,6 +26,34 @@ describe('Models Utils Tests', () => {
 
       expect(actual).toStrictEqual(expected);
     });
+
+    it('should map null', () => {
+      const expected = null;
+      const actual = models.documentToJson(null);
+
+      expect(actual).toStrictEqual(expected);
+    });
+
+    it('should map undefined', () => {
+      const expected = undefined;
+      const actual = models.documentToJson(undefined);
+
+      expect(actual).toStrictEqual(expected);
+    });
+
+    it('should map 0', () => {
+      const expected = 0;
+      const actual = models.documentToJson(0);
+
+      expect(actual).toStrictEqual(expected);
+    });
+
+    it('should map ""', () => {
+      const expected = '';
+      const actual = models.documentToJson('');
+
+      expect(actual).toStrictEqual(expected);
+    });
   });
 
   describe('#buildModel', () => {
@@ -70,15 +98,15 @@ describe('Models Utils Tests', () => {
       const collectionName = 'tests';
       const validObject = {
         _embedded: { tests: [{ test: 'test' }] },
-        _links: { self: { href: 'test' } }
+        _links: { self: { href: 'test' } },
       };
       const linksNotValidObject = {
         _embedded: { tests: [{ test: 'test' }] },
-        _links: { self: 'self' }
+        _links: { self: 'self' },
       };
       const embeddedNotValidObject = {
         _embedded: { hello: [{ test: 'test' }] },
-        _links: { self: { href: 'test' } }
+        _links: { self: { href: 'test' } },
       };
 
       const extendedSchema = models.buildCollectionSchema(collectionName, schema);

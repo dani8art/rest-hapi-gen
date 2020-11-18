@@ -25,9 +25,9 @@ describe('Hateoas Test', () => {
         _id: 'id',
         _links: {
           collection: { href: 'http://localhost/base/path/tests' },
-          self: { href: 'http://localhost/base/path/tests/id' }
+          self: { href: 'http://localhost/base/path/tests/id' },
         },
-        test: 'myTest'
+        test: 'myTest',
       };
 
       const hateoasResource = hateoas.addResourceLinks(baseResource, options);
@@ -41,14 +41,22 @@ describe('Hateoas Test', () => {
         _id: 'id',
         _links: {
           collection: { href: 'http://localhost/base/path/tests' },
-          self: { href: 'http://localhost/base/path/tests/myTest' }
+          self: { href: 'http://localhost/base/path/tests/myTest' },
         },
-        test: 'myTest'
+        test: 'myTest',
       };
 
       const hateoasResource = hateoas.addResourceLinks(baseResource, options);
 
       expect(hateoasResource).toStrictEqual(expected);
+    });
+
+    it('should return null', () => {
+      const options = { ...opts, identifier: 'test' };
+
+      const hateoasResource = hateoas.addResourceLinks(null, options);
+
+      expect(hateoasResource).toStrictEqual(null);
     });
   });
 
@@ -61,13 +69,13 @@ describe('Hateoas Test', () => {
               _id: 'id',
               _links: {
                 collection: { href: 'http://localhost/base/path/tests' },
-                self: { href: 'http://localhost/base/path/tests/id' }
+                self: { href: 'http://localhost/base/path/tests/id' },
               },
-              test: 'myTest'
-            }
-          ]
+              test: 'myTest',
+            },
+          ],
         },
-        _links: { self: { href: 'http://localhost/base/path/tests' } }
+        _links: { self: { href: 'http://localhost/base/path/tests' } },
       };
 
       const hateoasCollection = hateoas.addCollectionLinks(baseArray, opts);
