@@ -5,13 +5,13 @@ const Joi = require('joi');
 const builders = require('../../lib/validation/builders');
 
 const JoiRequiredMock = jest.fn().mockReturnValue('required');
-const JoiCommonMock = mockType => {
+const JoiCommonMock = (mockType) => {
   return {
     mockType,
-    required: JoiRequiredMock
+    required: JoiRequiredMock,
   };
 };
-Joi.object.mockImplementation(object => {
+Joi.object.mockImplementation((object) => {
   return { ...object, ...JoiCommonMock('object') };
 });
 Joi.string.mockReturnValue(JoiCommonMock('string'));

@@ -7,13 +7,14 @@ const HapiSwagger = require('hapi-swagger');
 const Pack = require('../package');
 
 const RestHapiGen = require('../lib/index');
-const { ActionType } = RestHapiGen;
+// const { ActionType } = RestHapiGen;
 
 const init = async () => {
   await Mongoose.connect('mongodb://localhost:27017/testdb', { useNewUrlParser: true, useUnifiedTopology: true });
 
   const server = Hapi.server({
     port: 4000,
+    // uri: 'http://localhost:4000',
   });
 
   const hapiSwaggerConf = {
@@ -22,9 +23,9 @@ const init = async () => {
     documentationPath: '/api/v1/docs',
     info: {
       title: 'Pets API Documentation',
-      version: Pack.version
+      version: Pack.version,
     },
-    grouping: 'tags'
+    grouping: 'tags',
   };
 
   const genConf = {
@@ -32,11 +33,9 @@ const init = async () => {
     basePath: '/api/v1',
     schema: Joi.object({
       name: Joi.string().required(),
-      tags: Joi.array()
-        .items(Joi.string())
-        .default([])
+      tags: Joi.array().items(Joi.string()).default([]),
     }),
-    // // You can override actions
+    //// You can override actions and properties that are built automatically
     // overrides: {
     //   actions: {
     //     // Override GET collection action
@@ -51,14 +50,14 @@ const init = async () => {
     Inert,
     Vision,
     { plugin: HapiSwagger, options: hapiSwaggerConf },
-    { plugin: RestHapiGen, options: genConf }
+    { plugin: RestHapiGen, options: genConf },
   ]);
 
   await server.start();
   console.log('Server running on %s and attached on %s', server.info.uri, server.info.address);
 };
 
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err) => {
   console.log(err);
   process.exit(1);
 });

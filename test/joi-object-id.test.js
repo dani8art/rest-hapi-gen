@@ -25,19 +25,19 @@ describe('The joi-objectid Tests', () => {
     var oid = joiObjectId(Joi);
 
     var tests = [
-      { val: '$bcd56789012345678901234', pass: false }
-    , { val: ' bcd56789012345678901234', pass: false }
-    , { val: 'abcd5678901234567890123', pass: false }
-    , { val: 'abcd56789012345678901234', pass: true }
-    , { val: 123456789012345678901234, pass: false }
-    , { val: { length: 24 } , pass: false }
-    ]
+      { val: '$bcd56789012345678901234', pass: false },
+      { val: ' bcd56789012345678901234', pass: false },
+      { val: 'abcd5678901234567890123', pass: false },
+      { val: 'abcd56789012345678901234', pass: true },
+      { val: 123456789012345678901234, pass: false },
+      { val: { length: 24 }, pass: false },
+    ];
 
     var schema = oid();
 
-    tests.forEach(function(test) {
+    tests.forEach(function (test) {
       var res = schema.validate(test.val);
-      assert(test.pass === ! res.error, res.error);
+      assert(test.pass === !res.error, res.error);
     });
 
     done();

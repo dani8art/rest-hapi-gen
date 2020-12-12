@@ -6,11 +6,11 @@ const Boom = require('@hapi/boom');
 const hateoas = require('../../lib/hateoas');
 const models = require('../../lib/models');
 
-Boom.badImplementation.mockImplementation(m => m);
-Boom.notFound.mockImplementation(m => m);
-models.documentToJson.mockImplementation(document => document);
-hateoas.addCollectionLinks.mockImplementation(jsonDocuments => jsonDocuments);
-hateoas.addResourceLinks.mockImplementation(jsonDocument => jsonDocument);
+Boom.badImplementation.mockImplementation((m) => m);
+Boom.notFound.mockImplementation((m) => m);
+models.documentToJson.mockImplementation((document) => document);
+hateoas.addCollectionLinks.mockImplementation((jsonDocuments) => jsonDocuments);
+hateoas.addResourceLinks.mockImplementation((jsonDocument) => jsonDocument);
 
 const builders = require('../../lib/handler/builders');
 
@@ -23,7 +23,7 @@ describe('Handler Builder Tests', () => {
     throw new Error('find error');
   });
 
-  const findOneMock = jest.fn().mockImplementation(query => {
+  const findOneMock = jest.fn().mockImplementation((query) => {
     if (query._id === 'notFound') {
       return undefined;
     }
@@ -48,17 +48,17 @@ describe('Handler Builder Tests', () => {
     throw new Error('deleteOne error');
   });
 
-  const mockCustomResource = { 'customHandler': 'customHandler' };
+  const mockCustomResource = { customHandler: 'customHandler' };
   const mockCustomCollection = [mockCustomResource];
   const customHandlerMock = jest.fn().mockReturnValue(mockCustomResource);
 
-  const mockModel = jest.fn().mockImplementation(errors => {
+  const mockModel = jest.fn().mockImplementation((errors) => {
     return {
       find: !errors ? findMock : findMockError,
       findOne: !errors ? findOneMock : findOneMockError,
       save: errors ? saveMock : saveMockError,
       updateOne: !errors ? updateOneMock : updateOneMockError,
-      deleteOne: !errors ? deleteOneMock : deleteOneMockError
+      deleteOne: !errors ? deleteOneMock : deleteOneMockError,
     };
   });
 
