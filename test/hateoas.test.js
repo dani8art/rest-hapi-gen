@@ -7,12 +7,12 @@ describe('Hateoas Test', () => {
   const baseResource = { test: 'myTest', _id: 'id' };
   const baseArray = [baseResource];
 
-  const opts = { url: 'http://localhost/base/path', collectionName: 'tests' };
+  const opts = { url: new URL('http://localhost/base/path'), collectionName: 'tests' };
 
   const collectionLink = { href: 'http://localhost/base/path/tests' };
 
   hateoasLinks.buildCollectionLink.mockReturnValue(collectionLink);
-  hateoasLinks.buildResourceLink.mockImplementation((url, collectionName, identifier) => {
+  hateoasLinks.buildResourceLink.mockImplementation((url, identifier) => {
     return { href: `http://localhost/base/path/tests/${identifier}` };
   });
 
