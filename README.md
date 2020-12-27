@@ -2,15 +2,15 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE) [![npm version](https://img.shields.io/npm/v/rest-hapi-gen.svg?style=flat)](https://www.npmjs.com/package/rest-hapi-gen) [![CircleCI](https://circleci.com/gh/dani8art/rest-hapi-gen.svg?style=svg)](https://circleci.com/gh/dani8art/rest-hapi-gen) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)]() [![tested with jest](https://img.shields.io/badge/tested_with-jest-99424f.svg)](https://github.com/facebook/jest) [![jest](https://facebook.github.io/jest/img/jest-badge.svg)](https://github.com/facebook/jest)
 
-> RESTHapi Gen is a [@hapijs/hapi](https://github.com/hapijs/hapi) plugin which generates a CRUD RESTful API from a given [@hapijs/joi](https://github.com/hapijs/joi) model.
+> RESTHapi Gen is a [@hapijs/hapi](https://github.com/hapijs/hapi) plugin which generates a CRUD RESTful API from a given [joi](https://github.com/sideway/joi) model.
 
 ### Compatibility
 
-| RESTHapi Gen version              | Hapi version | Joi Version                                                                                   |
-|-----------------------------------|--------------|-----------------------------------------------------------------------------------------------|
-| `2.x.x`                           | `20.x.x`     | `joi^17.x.x`                                                                                  |
-| `1.x.x`                           | `19.x.x`     | `@hapi/joi^17.x.x`                                                                            |
-| `0.x.x`                           | `18.x.x`     | `@hapi/joi^15.x.x`                                                                            |
+| RESTHapi Gen version | Hapi version | Joi Version        |
+| -------------------- | ------------ | ------------------ |
+| `2.x.x`              | `20.x.x`     | `joi^17.x.x`       |
+| `1.x.x`              | `19.x.x`     | `@hapi/joi^17.x.x` |
+| `0.x.x`              | `18.x.x`     | `@hapi/joi^15.x.x` |
 
 ## TL;DR;
 
@@ -47,20 +47,20 @@ const RestHapiGen = require('rest-hapi-gen');
 
 ## Plugin configuration
 
-| Option                            | Type         | Description                                                                                   |
-|-----------------------------------|--------------|-----------------------------------------------------------------------------------------------|
-| basePath                          | `string`     | `Optional` Base path where the CRUD endpoints are attached. Default: `'/'`                    |
-| collectionName                    | `string`     | `Required` Name for the collection that is created.                                           |
-| schema                            | `Joi`        | `Required` Joi schema for the collection that is created.                                     |
-| overrides.actions.GET_COLLECTION  | `Function`   | `Optional` async function that will overrides the default handler for GET_COLLECTION action.  |
-| overrides.actions.GET_RESOURCE    | `Function`   | `Optional` async function that will overrides the default handler for GET_RESOURCE action.    |
-| overrides.actions.CREATE_RESOURCE | `Function`   | `Optional` async function that will overrides the default handler for CREATE_RESOURCE action. |
-| overrides.actions.UPDATE_RESOURCE | `Function`   | `Optional` async function that will overrides the default handler for UPDATE_RESOURCE action. |
-| overrides.actions.DELETE_RESOURCE | `Function`   | `Optional` async function that will overrides the default handler for DELETE_RESOURCE action. |
+| Option                            | Type       | Description                                                                                  |
+| --------------------------------- | ---------- | -------------------------------------------------------------------------------------------- |
+| basePath                          | `string`   | `Optional` Base path where the CRUD endpoints are attached. Default: `'/'`                   |
+| collectionName                    | `string`   | `Required` Name for the collection that is created.                                          |
+| schema                            | `Joi`      | `Required` Joi schema for the collection that is created.                                    |
+| overrides.actions.GET_COLLECTION  | `Function` | `Optional` Async function that will override the default handler for GET_COLLECTION action.  |
+| overrides.actions.GET_RESOURCE    | `Function` | `Optional` Async function that will override the default handler for GET_RESOURCE action.    |
+| overrides.actions.CREATE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for CREATE_RESOURCE action. |
+| overrides.actions.UPDATE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for UPDATE_RESOURCE action. |
+| overrides.actions.DELETE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for DELETE_RESOURCE action. |
 
 ### Override an action
 
-If an action needs to be overrided, you must provide an `async function` that will be executed instead of the default one. This function will receive three args: `request` that will be a @hapijs [request object](https://hapi.dev/api/?v=20.0.2#request), `h` that will be a @hapijs [request toolkit](https://hapi.dev/api/?v=20.0.2#response-toolkit) and a `model` that will be a [mongoose model](https://mongoosejs.com/docs/models.html) base on the given schema.
+If an action needs to be overrided, you must provide an `async function` that will be executed instead of the default one. This function will receive three args: `request` that will be a @hapijs/hapi [request object](https://hapi.dev/api/?v=20.0.2#request), `h` that will be a @hapijs/hapi [request toolkit](https://hapi.dev/api/?v=20.0.2#response-toolkit) and a `model` that will be a [mongoose model](https://mongoosejs.com/docs/models.html) which is based on the given schema.
 
 > NOTE: Your custom function must return an object that must to be valid against the **Joi** schema otherwise the server will return an internal server error.
 
