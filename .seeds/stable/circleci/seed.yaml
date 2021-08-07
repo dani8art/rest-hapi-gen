@@ -2,12 +2,15 @@ templates:
   - .release-it.json
   - .circleci/config.yml
   - .circleci/skip-when-release
+  - .circleci/charts.config.yml
+  - .circleci/charts-publish
+  - .circleci/charts-upgrade-app
 scripts:
   beforePlant: echo "execute before plant circleci seed"
   afterPlant: >-
     npm i --save-dev release-it@^13.6.6 @commitlint/cli@^9.1.2
-    @commitlint/config-conventional@^9.1.1
-    @release-it/conventional-changelog@^1.1.4
+    @commitlint/config-conventional@^11.0.0
+    @release-it/conventional-changelog@^1.1.4 @release-it/bumper@^1.4.1
 values:
   artifact: circleci
   git:
@@ -20,7 +23,3 @@ values:
   deployment:
     enabled: false
     type: docker
-    docker:
-      image: darteaga/pets
-      additionalTags:
-        - latest
