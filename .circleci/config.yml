@@ -8,7 +8,16 @@ master_only: &master_only
   filters:
     branches:
       only: master
-
+ignore_gh_pages: &ignore_gh_pages
+  filters:
+    branches:
+      ignore: gh-pages
+release_tags_only: &release_tags_only
+  filters:
+    tags:
+      only: /.*/
+    branches:
+      ignore: /.*/
 commands:
   git_authoring:
     description: Authoring git commit.
@@ -20,7 +29,7 @@ commands:
 jobs:
   build:
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
     steps:
       - checkout
       - restore_cache:
@@ -35,7 +44,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
     environment:
       NODE_ENV: ci
     steps:
@@ -48,7 +57,7 @@ jobs:
 
   release:
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
     steps:
       - checkout
       - git_authoring
@@ -60,7 +69,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
     steps:
       - checkout
       - run:
@@ -72,8 +81,10 @@ workflows:
   version: 2
   default:
     jobs:
-      - build
+      - build:
+          <<: *ignore_gh_pages
       - test:
+          <<: *ignore_gh_pages
           requires:
             - build
       - release:
@@ -83,8 +94,4 @@ workflows:
   delivering:
     jobs:
       - deploy:
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
+          <<: *release_tags_only

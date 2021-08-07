@@ -1,0 +1,43 @@
+{{#if deployment.enabled}}
+{{#if deployment.type "===" "docker"}}
+{{#with deployment.docker.chart}}
+#!/bin/bash
+
+# shellcheck disable=SC1091
+
+set -o errexit
+set -o nounset
+set -o pipefail
+#set -o xtrace
+
+tag="${1:?tag is required}"
+src_root="$(cd "$(dirname "$0")/.." && pwd)"
+
+rm -rf "${src_root}/chart_src" && git clone -b master "{{repo}}" "${src_root}/chart_src"
+cd "${src_root}/chart_src"
+
+update_file() {
+    local -r file=${1:?file is missing}
+    local -r value=${2:?value is missing}
+    local -r file_type=${file##*\.}
+
+    if [[ "${file_type}" = "yaml" ]] || [[ "${file_type}" = "yml" ]]; then
+        yq w -i "${file}" "${value}" "${tag}"
+    elif [[ "${file_type}" = "json" ]]; then
+        file_content=$(jq  ".${value}=${tag}" "${file}")
+        echo "${file_content}" > "${file}"
+    fi
+}
+
+{{#each files}}
+update_file "{{this.path}}" "{{this.value}}"
+{{/each}}
+
+git status
+git --no-pager diff
+
+git commit -am "fix: upgrade app version"
+git push
+{{/with}}
+{{/if}}
+{{/if}}

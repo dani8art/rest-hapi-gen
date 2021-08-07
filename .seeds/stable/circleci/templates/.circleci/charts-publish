@@ -1,0 +1,46 @@
+{{#if deployment.enabled}}
+{{#if deployment.type "===" "chart"}}
+#!/bin/bash
+
+# shellcheck disable=SC1091
+
+set -o errexit
+set -o nounset
+set -o pipefail
+#set -o xtrace
+
+SRCROOT="$(cd "$(dirname "$0")/.." && pwd)"
+GIT_PUSH=${GIT_PUSH:-false}
+
+rm -rf $SRCROOT/output && git clone -b gh-pages git@github.com:dani8art/{{artifact}}-chart.git $SRCROOT/output
+
+helm repo add {{artifact}}-chart https://dani8art.github.io/{{artifact}}-chart
+{{#each deployment.chart.additionalRepos}}
+helm repo add {{this.name}} {{this.url}}
+{{/each}}
+
+for dir in $(find $SRCROOT/charts -mindepth 1 -maxdepth 1 -type d);
+do
+    rm -rf $dir/charts
+
+    name=$(basename $dir)
+
+    if [ $(helm dep list $dir 2>/dev/null| wc -l) -gt 1 ]
+    then
+        echo "Processing chart dependencies"
+        helm --debug dep build $dir
+    fi
+
+    echo "Processing $dir"
+    helm --debug package $dir
+done
+
+cp $SRCROOT/*.tgz output/
+cd $SRCROOT/output && helm repo index .
+
+cd $SRCROOT/output && git status
+
+cd $SRCROOT/output && git add . && git commit -m "chore(ci): publish charts" && git push git@github.com:dani8art/{{artifact}}-chart.git gh-pages
+
+{{/if}}
+{{/if}}

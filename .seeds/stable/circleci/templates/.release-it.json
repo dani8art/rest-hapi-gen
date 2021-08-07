@@ -19,6 +19,13 @@
   "plugins": {
     "@release-it/conventional-changelog": {
       "preset": "angular"
+    },
+    "@release-it/bumper": {
+      "out": [
+        "package.json"{{#if deployment.type "===" "chart"}},
+        "charts/{{artifact}}/Chart.yaml"
+        {{/if}}
+      ]
     }
   }
 }
