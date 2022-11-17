@@ -46,17 +46,17 @@
     "mongoose": "^5.13.5"
   },
   "devDependencies": {
-    "@commitlint/cli": "^9.1.2",
-    "@commitlint/config-conventional": "^11.0.0",
+    "@commitlint/cli": "^17.2.0",
+    "@commitlint/config-conventional": "^17.2.0",
     "@hapi/hapi": "^20.0.1",
     "@hapi/hoek": "^9.1.0",
     "@hapi/inert": "^6.0.3",
     "@hapi/vision": "^6.0.1",
-    "@release-it/bumper": "^1.4.1",
-    "@release-it/conventional-changelog": "^1.1.4",
+    "@release-it/bumper": "^4.0.0",
+    "@release-it/conventional-changelog": "^5.1.1",
     "hapi-swagger": "^14.0.0",
     "jest": "^26.6.1",
     "nodemon": "^2.0.6",
-    "release-it": "^13.7.2"
+    "release-it": "^15.5.0"
   }
 }

@@ -8,9 +8,9 @@ templates:
 scripts:
   beforePlant: echo "execute before plant circleci seed"
   afterPlant: >-
-    npm i --save-dev release-it@^13.6.6 @commitlint/cli@^9.1.2
-    @commitlint/config-conventional@^11.0.0
-    @release-it/conventional-changelog@^1.1.4 @release-it/bumper@^1.4.1
+    npm i --save-dev release-it@^15.5.0 @commitlint/cli@^17.2.0
+    @commitlint/config-conventional@^17.2.0
+    @release-it/conventional-changelog@^5.1.1 @release-it/bumper@^4.0.0
 values:
   artifact: circleci
   git:

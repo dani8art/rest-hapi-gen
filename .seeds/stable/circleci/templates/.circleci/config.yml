@@ -35,7 +35,7 @@ commands:
 jobs:
   build:
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:18.12
     steps:
       - checkout
       - restore_cache:
@@ -64,7 +64,7 @@ jobs:
       - run: ct lint --config .circleci/charts.config.yml
   {{else}}
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:18.12
     {{#with test}}
     {{#each dependencies}}
       - image: {{this}}
@@ -92,7 +92,7 @@ jobs:
 {{#if release.enabled}}
   release:
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:18.12
     steps:
       - checkout
       - git_authoring
@@ -109,7 +109,7 @@ jobs:
     {{#if deployment.type "===" "chart"}}
       - image: docker.io/darteaga/seed-circleci
     {{else}}
-      - image: circleci/node:14
+      - image: cimg/node:18.12
     {{/if}}
     steps:
       - checkout

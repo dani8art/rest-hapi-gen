@@ -22,7 +22,7 @@
     },
     "@release-it/bumper": {
       "out": [
-        "package.json"{{#if deployment.type "===" "chart"}},
+        {{#if deployment.type "===" "chart"}}
         "charts/{{artifact}}/Chart.yaml"
         {{/if}}
       ]
