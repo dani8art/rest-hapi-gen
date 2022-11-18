@@ -6,11 +6,11 @@
 
 ### Compatibility
 
-| RESTHapi Gen version | Hapi version | Joi Version        |
-| -------------------- | ------------ | ------------------ |
-| `2.x.x`              | `20.x.x`     | `joi^17.x.x`       |
-| `1.x.x`              | `19.x.x`     | `@hapi/joi^17.x.x` |
-| `0.x.x`              | `18.x.x`     | `@hapi/joi^15.x.x` |
+| RESTHapi Gen version | Hapi JS version       | Joi Version        |
+| -------------------- | --------------------- | ------------------ |
+| `2.x.x`              | `20.x.x` and `21.x.x` | `joi^17.x.x`       |
+| `1.x.x`              | `19.x.x`              | `@hapi/joi^17.x.x` |
+| `0.x.x`              | `18.x.x`              | `@hapi/joi^15.x.x` |
 
 ## TL;DR;
 
