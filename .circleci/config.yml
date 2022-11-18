@@ -29,7 +29,7 @@ commands:
 jobs:
   build:
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:18.12
     steps:
       - checkout
       - restore_cache:
@@ -44,7 +44,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:18.12
     environment:
       NODE_ENV: ci
     steps:
@@ -57,7 +57,7 @@ jobs:
 
   release:
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:18.12
     steps:
       - checkout
       - git_authoring
@@ -69,7 +69,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/node:14
+      - image: cimg/node:18.12
     steps:
       - checkout
       - run:

@@ -21,7 +21,7 @@
     },
     "@release-it/bumper": {
       "out": [
-        "package.json"      ]
+      ]
     }
   }
 }
