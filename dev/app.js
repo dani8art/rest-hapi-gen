@@ -29,7 +29,7 @@ const init = async () => {
     collectionName: 'pets',
     basePath: '/api/v1',
     schema: Joi.object({
-      name: Joi.string().required(),
+      name: Joi.string().meta({ _mongoose: { unique: true } }).required(),
       tags: Joi.array().items(Joi.string()).default([]),
     }),
     //// You can override actions and properties that are built automatically

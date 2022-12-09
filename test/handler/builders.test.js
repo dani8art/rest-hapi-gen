@@ -8,6 +8,7 @@ const models = require('../../lib/models');
 
 Boom.badImplementation.mockImplementation((m) => m);
 Boom.notFound.mockImplementation((m) => m);
+Boom.badRequest.mockImplementation((m) => m);
 models.documentToJson.mockImplementation((document) => document);
 hateoas.addCollectionLinks.mockImplementation((jsonDocuments) => jsonDocuments);
 hateoas.addResourceLinks.mockImplementation((jsonDocument) => jsonDocument);
@@ -19,9 +20,10 @@ describe('Handler Builder Tests', () => {
   const mockCollection = [mockResource];
 
   const findMock = jest.fn().mockReturnValue(mockCollection);
-  const findMockError = jest.fn().mockImplementation(() => {
-    throw new Error('find error');
-  });
+  const findMockError = (message) =>
+    jest.fn().mockImplementation(() => {
+      throw new Error(message || 'find error');
+    });
 
   const findOneMock = jest.fn().mockImplementation((query) => {
     if (query._id === 'notFound') {
@@ -29,40 +31,44 @@ describe('Handler Builder Tests', () => {
     }
     return mockResource;
   });
-  const findOneMockError = jest.fn().mockImplementation(() => {
-    throw new Error('findOne error');
-  });
+  const findOneMockError = (message) =>
+    jest.fn().mockImplementation(() => {
+      throw new Error(message || 'findOne error');
+    });
 
   const saveMock = jest.fn().mockReturnValue(mockResource);
-  const saveMockError = jest.fn().mockImplementation(() => {
-    throw new Error('saveMock error');
-  });
+  const saveMockError = (message) =>
+    jest.fn().mockImplementation(() => {
+      throw new Error(message || 'saveMock error');
+    });
 
   const updateOneMock = jest.fn();
-  const updateOneMockError = jest.fn().mockImplementation(() => {
-    throw new Error('updateOne error');
-  });
+  const updateOneMockError = (message) =>
+    jest.fn().mockImplementation(() => {
+      throw new Error(message || 'updateOne error');
+    });
 
   const deleteOneMock = jest.fn().mockReturnValue('deleted');
-  const deleteOneMockError = jest.fn().mockImplementation(() => {
-    throw new Error('deleteOne error');
-  });
+  const deleteOneMockError = (message) =>
+    jest.fn().mockImplementation(() => {
+      throw new Error(message || 'deleteOne error');
+    });
 
   const mockCustomResource = { customHandler: 'customHandler' };
   const mockCustomCollection = [mockCustomResource];
   const customHandlerMock = jest.fn().mockReturnValue(mockCustomResource);
 
-  const mockModel = jest.fn().mockImplementation((errors) => {
+  const mockModel = jest.fn().mockImplementation((errors, message) => {
     return {
-      find: !errors ? findMock : findMockError,
-      findOne: !errors ? findOneMock : findOneMockError,
-      save: errors ? saveMock : saveMockError,
-      updateOne: !errors ? updateOneMock : updateOneMockError,
-      deleteOne: !errors ? deleteOneMock : deleteOneMockError,
+      find: !errors ? findMock : findMockError(message),
+      findOne: !errors ? findOneMock : findOneMockError(message),
+      save: !errors ? saveMock : saveMockError(message),
+      updateOne: !errors ? updateOneMock : updateOneMockError(message),
+      deleteOne: !errors ? deleteOneMock : deleteOneMockError(message),
     };
   });
 
-  const mockRequest = {query: {name: "fuffy"}};
+  const mockRequest = { query: { name: 'fuffy' } };
   const mockH = {};
   const options = { test: 'options' };
 
@@ -75,7 +81,7 @@ describe('Handler Builder Tests', () => {
 
       const actualResponse = await actualHandler(mockRequest, mockH);
 
-      expect(model.find).toHaveBeenCalledWith({name: "fuffy"});
+      expect(model.find).toHaveBeenCalledWith({ name: 'fuffy' });
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource, 0, mockCollection);
       expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCollection, options);
       expect(actualResponse).toStrictEqual(mockCollection);
@@ -166,42 +172,64 @@ describe('Handler Builder Tests', () => {
 
   describe('#createResourceHandlerBuilder', () => {
     it('should return the default handler', async () => {
-      const actualHandler = builders.createResourceHandlerBuilder(mockModel, options);
+      const modelInstance = mockModel();
+      const model = jest.fn().mockImplementation(() => modelInstance);
+      const actualHandler = builders.createResourceHandlerBuilder(model, options);
 
       const mockRequest = { payload: 'payload' };
       const actualResponse = await actualHandler(mockRequest, mockH);
 
-      expect(mockModel).toHaveBeenCalledTimes(1);
-      expect(saveMock).toHaveBeenCalledTimes(1);
+      expect(model).toHaveBeenCalledTimes(1);
+      expect(modelInstance.save).toHaveBeenCalledTimes(1);
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource);
       expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, options);
       expect(actualResponse).toStrictEqual(mockResource);
     });
 
     it('should return the the custom handler', async () => {
+      const modelInstance = mockModel();
+      const model = jest.fn().mockImplementation(() => modelInstance);
       const customOptions = { ...options, handler: customHandlerMock };
-      const actualHandler = builders.createResourceHandlerBuilder(mockModel, customOptions);
+      const actualHandler = builders.createResourceHandlerBuilder(model, customOptions);
 
       const actualResponse = await actualHandler(mockRequest, mockH);
 
-      expect(mockModel).toHaveBeenCalledTimes(0);
-      expect(saveMock).toHaveBeenCalledTimes(0);
+      expect(model).toHaveBeenCalledTimes(0);
+      expect(modelInstance.save).toHaveBeenCalledTimes(0);
       expect(customHandlerMock).toHaveBeenCalledTimes(1);
       expect(models.documentToJson).toHaveBeenCalledWith(mockCustomResource);
       expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, customOptions);
       expect(actualResponse).toStrictEqual(mockCustomResource);
     });
 
-    it('should return error', async () => {
-      const actualHandler = builders.createResourceHandlerBuilder(mockModel, options);
+    it('should return generic error', async () => {
+      const modelInstance = mockModel(true);
+      const model = jest.fn().mockImplementation(() => modelInstance);
+      const actualHandler = builders.createResourceHandlerBuilder(model, options);
 
       const actualResponse = await actualHandler(mockRequest, mockH);
 
-      expect(mockModel).toHaveBeenCalledTimes(1);
-      expect(saveMockError).toHaveBeenCalledTimes(1);
+      expect(model).toHaveBeenCalledTimes(1);
+      expect(modelInstance.save).toHaveBeenCalledTimes(1);
       expect(models.documentToJson).not.toHaveBeenCalledWith(mockResource);
       expect(hateoas.addResourceLinks).not.toHaveBeenCalledWith(mockResource, options);
       expect(actualResponse).toStrictEqual('saveMock error');
+    });
+
+    it('should return duplicate key error', async () => {
+      const modelInstance = mockModel(true, 'E11000');
+      const model = jest.fn().mockImplementation(() => modelInstance);
+      const actualHandler = builders.createResourceHandlerBuilder(model, options);
+
+      const actualResponse = await actualHandler(mockRequest, mockH);
+
+      expect(model).toHaveBeenCalledTimes(1);
+      expect(modelInstance.save).toHaveBeenCalledTimes(1);
+      expect(models.documentToJson).not.toHaveBeenCalledWith(mockResource);
+      expect(hateoas.addResourceLinks).not.toHaveBeenCalledWith(mockResource, options);
+      expect(actualResponse).toStrictEqual(
+        'Duplicate key error. [collection = undefined, key = unknown]. The given value already exists: unknown'
+      );
     });
   });
 
