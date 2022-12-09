@@ -62,7 +62,7 @@ describe('Handler Builder Tests', () => {
     };
   });
 
-  const mockRequest = {};
+  const mockRequest = {query: {name: "fuffy"}};
   const mockH = {};
   const options = { test: 'options' };
 
@@ -75,7 +75,7 @@ describe('Handler Builder Tests', () => {
 
       const actualResponse = await actualHandler(mockRequest, mockH);
 
-      expect(model.find).toHaveBeenCalled();
+      expect(model.find).toHaveBeenCalledWith({name: "fuffy"});
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource, 0, mockCollection);
       expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCollection, options);
       expect(actualResponse).toStrictEqual(mockCollection);
