@@ -87,6 +87,31 @@ describe('Handler Builder Tests', () => {
       expect(actualResponse).toStrictEqual(mockCollection);
     });
 
+    [
+      { query: {}, parsedQuery: {} },
+      { query: { name: 'fuffy' }, parsedQuery: { name: 'fuffy' } },
+      { query: { name: 4 }, parsedQuery: { name: 4 } },
+      { query: { name: '{"$lte": "fuffy"}' }, parsedQuery: { name: { $lte: 'fuffy' } } },
+      {
+        query: { name: '{"$lte": "fuffy"}', tags: '{ "$in": ["vaporizing", "talking"] }' },
+        parsedQuery: { name: { $lte: 'fuffy' }, tags: { $in: ['vaporizing', 'talking'] } },
+      },
+      {
+        query: { name: '{"$lte": "fuffy"}', tags: ['vaporizing', 'talking'] },
+        parsedQuery: { name: { $lte: 'fuffy' }, tags: ['vaporizing', 'talking'] },
+      },
+    ].forEach((params, i) => {
+      it(`should parse hapi query to mongoose query parms[${i}]`, async () => {
+        const model = mockModel();
+        const actualHandler = builders.getCollectionHandlerBuilder(model, options);
+
+        mockRequest.query = params.query;
+        const actualResponse = await actualHandler(mockRequest, mockH);
+
+        expect(model.find).toHaveBeenCalledWith(params.parsedQuery);
+      });
+    });
+
     it('should return the the custom handler', async () => {
       const model = mockModel();
       const customOptions = { ...options, handler: customHandlerMock };
