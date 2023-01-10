@@ -29,7 +29,9 @@ const init = async () => {
     collectionName: 'pets',
     basePath: '/api/v1',
     schema: Joi.object({
-      name: Joi.string().meta({ _mongoose: { unique: true } }).required(),
+      name: Joi.string()
+        .meta({ _mongoose: { unique: true } })
+        .required(),
       tags: Joi.array().items(Joi.string()).default([]),
     }),
     //// You can override actions and properties that are built automatically
@@ -41,6 +43,12 @@ const init = async () => {
     //     },
     //   },
     // },
+    authn: {
+      enabled: true,
+      server: { url: process.env['AUTHN_SERVER_URL'], realm: process.env['AUTHN_SERVER_REALM'] },
+      client: { id: process.env['AUTHN_CLIENT_ID'], secret: process.env['AUTHN_CLIENT_SECRET'] },
+    },
+    tls: false,
   };
 
   await server.register([
