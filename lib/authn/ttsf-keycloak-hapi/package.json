@@ -1,0 +1,50 @@
+{
+  "name": "keycloak-hapi",
+  "version": "4.1.1",
+  "description": "Integration of Keycloak Authorization Server with HapiJS",
+  "main": "./index.js",
+  "scripts": {
+    "build": "babel src --out-dir dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/novomatic-tech/keycloak-hapi.git"
+  },
+  "keywords": [
+    "hapi",
+    "hapijs",
+    "auth",
+    "keycloak",
+    "authorization",
+    "oauth2.0",
+    "oauth",
+    "oidc"
+  ],
+  "author": "NOVOMATIC Technologies Poland S.A.",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/novomatic-tech/keycloak-hapi/issues"
+  },
+  "homepage": "https://github.com/novomatic-tech/keycloak-hapi#readme",
+  "engines": {
+    "node": ">=14",
+    "npm": ">=6"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.12.5",
+    "@hapi/boom": "^9.1.4",
+    "@hapi/hapi": "^20.2.1",
+    "@hapi/wreck": "^17.1.0",
+    "@hapi/yar": "^10.1.1",
+    "keycloak-connect": "^15.0.2",
+    "core-js": "^3.19.1",
+    "lodash": "^4.17.21",
+    "url-join": "^4.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/cli": "^7.12.10",
+    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/preset-env": "^7.12.11"
+  }
+}
