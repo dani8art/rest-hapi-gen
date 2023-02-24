@@ -1,0 +1,40 @@
+{
+  "name": "ttsf-keycloak-hapi",
+  "version": "0.0.0",
+  "description": "Integration of Keycloak Authorization Server with HapiJS",
+  "main": "./index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dani8art/ttsf-keycloak-hapi.git"
+  },
+  "keywords": [
+    "hapi",
+    "hapijs",
+    "auth",
+    "keycloak",
+    "authorization",
+    "oauth2.0",
+    "oauth",
+    "oidc"
+  ],
+  "author": "Daniel Arteaga",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/dani8art/ttsf-keycloak-hapi/issues"
+  },
+  "homepage": "https://github.com/dani8art/ttsf-keycloak-hapi#readme",
+  "engines": {
+    "node": ">=14",
+    "npm": ">=6"
+  },
+  "dependencies": {
+    "@hapi/boom": "^9.1.4",
+    "@hapi/hapi": "^20.2.1",
+    "@hapi/wreck": "^17.1.0",
+    "@hapi/yar": "^10.1.1",
+    "keycloak-connect": "^15.0.2",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {}
+}

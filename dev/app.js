@@ -14,20 +14,25 @@ const init = async () => {
 
   const server = Hapi.server({ port: 4000 });
 
-  const hapiSwaggerConf = {
+  const hapiSwaggerConfig = {
     jsonPath: '/api/v1/oas.json',
     basePath: '/api/v1',
     documentationPath: '/api/v1/docs',
-    info: {
-      title: 'Pets API Documentation',
-      version: Pack.version,
-    },
+    info: { title: 'Pets API Documentation', version: Pack.version },
     grouping: 'tags',
   };
 
-  const genConf = {
+  const commonConfig = { basePath: '/api/v1', tls: false };
+
+  const commonAuthConfig = {
+    enabled: true,
+    server: { url: process.env['AUTH_SERVER_URL'], realm: process.env['AUTH_SERVER_REALM'] },
+    client: { id: process.env['AUTH_CLIENT_ID'], secret: process.env['AUTH_CLIENT_SECRET'] },
+  };
+
+  const petsConfig = {
+    ...commonConfig,
     collectionName: 'pets',
-    basePath: '/api/v1',
     schema: Joi.object({
       name: Joi.string()
         .meta({ _mongoose: { unique: true } })
@@ -43,19 +48,26 @@ const init = async () => {
     //     },
     //   },
     // },
-    authn: {
-      enabled: true,
-      server: { url: process.env['AUTHN_SERVER_URL'], realm: process.env['AUTHN_SERVER_REALM'] },
-      client: { id: process.env['AUTHN_CLIENT_ID'], secret: process.env['AUTHN_CLIENT_SECRET'] },
-    },
-    tls: false,
+    auth: { ...commonAuthConfig },
+  };
+
+  const tagsConfig = {
+    ...commonConfig,
+    collectionName: 'tags',
+    schema: Joi.object({
+      name: Joi.string()
+        .meta({ _mongoose: { unique: true } })
+        .required(),
+    }),
+    auth: { ...commonAuthConfig, scope: { read: ['tags:ro'], write: ['tags:rw'] } },
   };
 
   await server.register([
     Inert,
     Vision,
-    { plugin: HapiSwagger, options: hapiSwaggerConf },
-    { plugin: RestHapiGen, options: genConf },
+    { plugin: HapiSwagger, options: hapiSwaggerConfig },
+    { plugin: RestHapiGen, options: petsConfig },
+    { plugin: RestHapiGen, options: tagsConfig },
   ]);
 
   await server.start();
