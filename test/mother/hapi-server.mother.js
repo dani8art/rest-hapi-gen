@@ -1,4 +1,9 @@
 class HapiServerBuilder {
+  constructor() {
+    this._routes = [];
+    this._plugins = {};
+  }
+
   realmModifiersRoutePrefix(realmModifiersRoutePrefix) {
     this._realmModifiersRoutePrefix = realmModifiersRoutePrefix;
     return this;
@@ -39,6 +44,16 @@ class HapiServerBuilder {
     return this;
   }
 
+  addRoute(path, fn = jest.fn()) {
+    this._routes.push({ path, handler: fn });
+    return this;
+  }
+
+  addPlugin(name, plugin) {
+    this._plugins[name] = plugin;
+    return this;
+  }
+
   build() {
     return {
       version: this._version,
@@ -48,6 +63,8 @@ class HapiServerBuilder {
       route: this._route,
       register: this._register,
       auth: { strategy: this._strategy, default: this._default },
+      table: () => this._routes,
+      registrations: this._plugins,
     };
   }
 }
