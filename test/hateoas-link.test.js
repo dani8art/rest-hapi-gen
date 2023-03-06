@@ -3,24 +3,43 @@ const hateoas = require('../lib/hateoas-links');
 const HapiRequestMother = require('./mother/hapi-request.mother');
 
 describe('Hateoas Links Test', () => {
-  const collectionName = 'tests';
-  const url = new URL(`http://localhost/base/path/${collectionName}`);
+  describe('#mapCollectionPath', () => {
+    it('When request the collection then return the collection path', () => {
+      const expectedPath = '/collection';
+      const request = HapiRequestMother.complete().path('/collection').build();
 
-  describe('#buildCollectionLink', () => {
-    it('should return the collection link', () => {
-      const expectedLink = { href: 'http://localhost/base/path/tests' };
-      const hateoasCollectionLink = hateoas.buildCollectionLink(url);
+      const hateoasCollectionLink = hateoas.mapCollectionPath(request, 'id');
 
-      expect(hateoasCollectionLink).toStrictEqual(expectedLink);
+      expect(hateoasCollectionLink).toStrictEqual(expectedPath);
+    });
+
+    it('When request the resource then return the collection path', () => {
+      const expectedPath = '/collection';
+      const request = HapiRequestMother.complete().path('/collection/id').build();
+
+      const hateoasCollectionLink = hateoas.mapCollectionPath(request, 'id');
+
+      expect(hateoasCollectionLink).toStrictEqual(expectedPath);
     });
   });
 
-  describe('#buildResourceLink', () => {
-    it('should return the resource link with default identifier', () => {
-      const expectedLink = { href: 'http://localhost/base/path/tests/myTest' };
-      const hateoasCollectionLink = hateoas.buildResourceLink(url, 'myTest');
+  describe('#mapResourcePath', () => {
+    it('When request the collection then return the resource path', () => {
+      const expectedPath = '/collection/id';
+      const request = HapiRequestMother.complete().path('/collection').build();
 
-      expect(hateoasCollectionLink).toStrictEqual(expectedLink);
+      const hateoasCollectionLink = hateoas.mapResourcePath(request, 'id');
+
+      expect(hateoasCollectionLink).toStrictEqual(expectedPath);
+    });
+
+    it('When request the resource then return the resource path', () => {
+      const expectedPath = '/collection/id';
+      const request = HapiRequestMother.complete().path('/collection/id').build();
+
+      const hateoasCollectionLink = hateoas.mapResourcePath(request, 'id');
+
+      expect(hateoasCollectionLink).toStrictEqual(expectedPath);
     });
   });
 

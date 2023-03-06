@@ -32,7 +32,7 @@ const init = async () => {
 
   const petsConfig = {
     ...commonConfig,
-    collectionName: 'pets',
+    collection: { name: 'pets' },
     schema: Joi.object({
       name: Joi.string()
         .meta({ _mongoose: { unique: true } })
@@ -53,7 +53,7 @@ const init = async () => {
 
   const tagsConfig = {
     ...commonConfig,
-    collectionName: 'tags',
+    collection: { name: 'tags' },
     schema: Joi.object({
       name: Joi.string()
         .meta({ _mongoose: { unique: true } })

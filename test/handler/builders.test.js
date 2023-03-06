@@ -70,7 +70,7 @@ describe('Handler Builder Tests', () => {
 
   const mockRequest = { query: { name: 'fuffy' } };
   const mockH = {};
-  const options = { test: 'options' };
+  const options = { test: 'options', collection: { name: 'name' } };
 
   beforeEach(() => jest.clearAllMocks());
 
@@ -83,7 +83,7 @@ describe('Handler Builder Tests', () => {
 
       expect(model.find).toHaveBeenCalledWith({ name: 'fuffy' });
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource, 0, mockCollection);
-      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCollection, options);
+      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCollection, mockRequest, options.collection.name);
       expect(actualResponse).toStrictEqual(mockCollection);
     });
 
@@ -122,7 +122,11 @@ describe('Handler Builder Tests', () => {
       expect(model.find).not.toHaveBeenCalled();
       expect(customHandlerMock).toHaveBeenCalled();
       expect(models.documentToJson).toHaveBeenCalledWith(mockCustomResource, 0, mockCustomCollection);
-      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCustomCollection, customOptions);
+      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(
+        mockCustomCollection,
+        mockRequest,
+        options.collection.name
+      );
       expect(actualResponse).toStrictEqual(mockCustomCollection);
     });
 
@@ -150,7 +154,7 @@ describe('Handler Builder Tests', () => {
 
       expect(model.findOne).toHaveBeenCalled();
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, options);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockResource);
     });
 
@@ -164,7 +168,7 @@ describe('Handler Builder Tests', () => {
       expect(customHandlerMock).toHaveBeenCalled();
       expect(model.findOne).not.toHaveBeenCalled();
       expect(models.documentToJson).toHaveBeenCalledWith(mockCustomResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, customOptions);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockCustomResource);
     });
 
@@ -207,7 +211,7 @@ describe('Handler Builder Tests', () => {
       expect(model).toHaveBeenCalledTimes(1);
       expect(modelInstance.save).toHaveBeenCalledTimes(1);
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, options);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockResource);
     });
 
@@ -223,7 +227,7 @@ describe('Handler Builder Tests', () => {
       expect(modelInstance.save).toHaveBeenCalledTimes(0);
       expect(customHandlerMock).toHaveBeenCalledTimes(1);
       expect(models.documentToJson).toHaveBeenCalledWith(mockCustomResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, customOptions);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockCustomResource);
     });
 
@@ -253,7 +257,7 @@ describe('Handler Builder Tests', () => {
       expect(models.documentToJson).not.toHaveBeenCalledWith(mockResource);
       expect(hateoas.addResourceLinks).not.toHaveBeenCalledWith(mockResource, options);
       expect(actualResponse).toStrictEqual(
-        'Duplicate key error. [collection = undefined, key = unknown]. The given value already exists: unknown'
+        'Duplicate key error. [collection = name, key = unknown]. The given value already exists: unknown'
       );
     });
   });
@@ -269,7 +273,7 @@ describe('Handler Builder Tests', () => {
       expect(updateOneMock).toHaveBeenCalledWith({ _id: mockRequest.params.identifier }, mockRequest.payload);
       expect(findOneMock).toHaveBeenCalledWith({ _id: mockRequest.params.identifier });
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, options);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockResource);
     });
 
@@ -285,7 +289,7 @@ describe('Handler Builder Tests', () => {
       expect(findOneMock).toHaveBeenCalledTimes(0);
       expect(customHandlerMock).toHaveBeenCalled();
       expect(models.documentToJson).toHaveBeenCalledWith(mockCustomResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, customOptions);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockCustomResource);
     });
 

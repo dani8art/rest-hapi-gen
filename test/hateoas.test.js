@@ -1,60 +1,60 @@
 jest.mock('../lib/hateoas-links');
 
-const hateoasLinks = require('../lib/hateoas-links');
-const hateoas = require('../lib/hateoas');
+const HateoasLinks = require('../lib/hateoas-links');
+const Hateoas = require('../lib/hateoas');
+
+const HapiRequestMother = require('./mother/hapi-request.mother');
+const request = HapiRequestMother.complete().build();
 
 describe('Hateoas Test', () => {
   const baseResource = { test: 'myTest', _id: 'id' };
   const baseArray = [baseResource];
 
-  const opts = { url: new URL('http://localhost/base/path'), collectionName: 'tests' };
+  const opts = { collection: { name: 'tests' } };
 
-  const collectionLink = { href: 'http://localhost/base/path/tests' };
+  const collectionPath = '/base/path/tests';
 
-  hateoasLinks.buildCollectionLink.mockReturnValue(collectionLink);
-  hateoasLinks.buildResourceLink.mockImplementation((url, identifier) => {
-    return { href: `http://localhost/base/path/tests/${identifier}` };
+  HateoasLinks.mapCollectionPath.mockReturnValue(collectionPath);
+  HateoasLinks.mapResourcePath.mockImplementation((request, identifier) => {
+    return `/base/path/tests/${identifier}`;
   });
+  HateoasLinks.href.mockReturnValue({ href: 'http://test.local' });
 
   beforeEach(() => jest.clearAllMocks());
 
   describe('#addResourceLinks', () => {
     it('should return the object with default identifier links', () => {
-      const options = { ...opts };
       const expected = {
         _id: 'id',
         _links: {
-          collection: { href: 'http://localhost/base/path/tests' },
-          self: { href: 'http://localhost/base/path/tests/id' },
+          collection: { href: 'http://test.local' },
+          self: { href: 'http://test.local' },
         },
         test: 'myTest',
       };
 
-      const hateoasResource = hateoas.addResourceLinks(baseResource, options);
+      const hateoasResource = Hateoas.addResourceLinks(baseResource, request, '_id');
 
       expect(hateoasResource).toStrictEqual(expected);
     });
 
     it('should return the object with custom identifier links', () => {
-      const options = { ...opts, identifier: 'test' };
       const expected = {
         _id: 'id',
         _links: {
-          collection: { href: 'http://localhost/base/path/tests' },
-          self: { href: 'http://localhost/base/path/tests/myTest' },
+          collection: { href: 'http://test.local' },
+          self: { href: 'http://test.local' },
         },
         test: 'myTest',
       };
 
-      const hateoasResource = hateoas.addResourceLinks(baseResource, options);
+      const hateoasResource = Hateoas.addResourceLinks(baseResource, request, 'test');
 
       expect(hateoasResource).toStrictEqual(expected);
     });
 
     it('should return null', () => {
-      const options = { ...opts, identifier: 'test' };
-
-      const hateoasResource = hateoas.addResourceLinks(null, options);
+      const hateoasResource = Hateoas.addResourceLinks(null, request, '_id');
 
       expect(hateoasResource).toStrictEqual(null);
     });
@@ -68,17 +68,17 @@ describe('Hateoas Test', () => {
             {
               _id: 'id',
               _links: {
-                collection: { href: 'http://localhost/base/path/tests' },
-                self: { href: 'http://localhost/base/path/tests/id' },
+                collection: { href: 'http://test.local' },
+                self: { href: 'http://test.local' },
               },
               test: 'myTest',
             },
           ],
         },
-        _links: { self: { href: 'http://localhost/base/path/tests' } },
+        _links: { self: { href: 'http://test.local' } },
       };
 
-      const hateoasCollection = hateoas.addCollectionLinks(baseArray, opts);
+      const hateoasCollection = Hateoas.addCollectionLinks(baseArray, request, opts.collection.name);
 
       expect(hateoasCollection).toStrictEqual(expected);
     });

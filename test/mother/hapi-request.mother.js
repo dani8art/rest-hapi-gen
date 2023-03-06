@@ -62,6 +62,11 @@ class HapiRequestBuilder {
     return this;
   }
 
+  path(path) {
+    this._path = path;
+    return this;
+  }
+
   build() {
     const server = { info: { protocol: this._protocol } };
     return {
@@ -72,16 +77,17 @@ class HapiRequestBuilder {
       yar: this._yar,
       auth: this._auth,
       raw: { req: { url: `http://${this._host}` } },
+      path: this._path,
     };
   }
 }
 
 const complete = () => {
-  return new HapiRequestBuilder().protocol('http').host('tests.local');
+  return new HapiRequestBuilder().protocol('http').host('tests.local').path('/');
 };
 
 const completeOnHeaders = () => {
-  return new HapiRequestBuilder().headerProtocol('http').headerHost('tests.local');
+  return new HapiRequestBuilder().headerProtocol('http').headerHost('tests.local').path('/');
 };
 
 module.exports = { complete, completeOnHeaders };

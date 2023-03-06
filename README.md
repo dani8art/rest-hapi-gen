@@ -8,7 +8,7 @@
 
 | RESTHapi Gen version | Hapi JS version       | Joi Version        |
 | -------------------- | --------------------- | ------------------ |
-| `2.x.x`              | `20.x.x` and `21.x.x` | `joi^17.x.x`       |
+| `2.x.x` and `3.x.x`  | `20.x.x` and `21.x.x` | `joi^17.x.x`       |
 | `1.x.x`              | `19.x.x`              | `@hapi/joi^17.x.x` |
 | `0.x.x`              | `18.x.x`              | `@hapi/joi^15.x.x` |
 
@@ -31,7 +31,7 @@ const RestHapiGen = require('rest-hapi-gen');
   const server = Hapi.server({ port: 4000 });
 
   const petsCollectionConf = {
-    collectionName: 'pets',
+    collection: { name: 'pets' },
     schema: Joi.object({
       name: Joi.string().required(),
       tags: Joi.array().items(Joi.string()).default([]),
@@ -61,7 +61,7 @@ const RestHapiGen = require('rest-hapi-gen');
 | auth.session.enabled              | `boolean`  | `Optional` Whether to enable session or just bearer only auth mechanism. Default: `true`     |
 | auth.session.password             | `string`   | `Optional` The session encryption password. Default: Random generated                        |
 | basePath                          | `string`   | `Optional` Base path where the CRUD endpoints are attached. Default: `'/'`                   |
-| collectionName                    | `string`   | `Required` Name for the collection that is created.                                          |
+| collection.name                   | `string`   | `Required` Name for the collection that is created.                                          |
 | schema                            | `Joi`      | `Required` Joi schema for the collection that is created.                                    |
 | overrides.actions.GET_COLLECTION  | `Function` | `Optional` Async function that will override the default handler for GET_COLLECTION action.  |
 | overrides.actions.GET_RESOURCE    | `Function` | `Optional` Async function that will override the default handler for GET_RESOURCE action.    |
@@ -81,7 +81,7 @@ If an action needs to be overrided, you must provide an `async function` that wi
 const { ActionType } = RestHapiGen;
 ...
   const petsCollectionConf = {
-    collectionName: 'pets',
+    collection: { name: 'pets' },
     schema: Joi.object({
       name: Joi.string().required(),
       tags: Joi.array().items(Joi.string()).default([])
@@ -118,7 +118,7 @@ Currently, RESTHapi Gen only support `keycloak` as authentication provider, a ge
 
 ```javascript
 const petsCollectionConf = {
-  collectionName: 'pets',
+  collection: { name: 'pets' },
   schema: Joi.object({
     name: Joi.string().required(),
     tags: Joi.array().items(Joi.string()).default([]),
