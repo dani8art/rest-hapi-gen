@@ -68,6 +68,7 @@ const RestHapiGen = require('rest-hapi-gen');
 | overrides.actions.CREATE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for CREATE_RESOURCE action. |
 | overrides.actions.UPDATE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for UPDATE_RESOURCE action. |
 | overrides.actions.DELETE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for DELETE_RESOURCE action. |
+| rootPathRedirect                  | `boolean`  | `Optional` Whether redirect from root path (`/`) to `basePath` path. Default: `false`        |
 | tls                               | `boolean`  | `Optional` Whether the server is using TLS externally/internally or not. Default: `false`    |
 
 ### Override an action

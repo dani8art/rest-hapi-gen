@@ -22,7 +22,7 @@ const init = async () => {
     grouping: 'tags',
   };
 
-  const commonConfig = { basePath: '/api/v1', tls: false };
+  const commonConfig = { basePath: '/api/v1', tls: false, rootPathRedirect: true };
 
   const commonAuthConfig = {
     enabled: true,
