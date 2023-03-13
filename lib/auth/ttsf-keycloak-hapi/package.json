@@ -28,13 +28,6 @@
     "node": ">=14",
     "npm": ">=6"
   },
-  "dependencies": {
-    "@hapi/boom": "^9.1.4",
-    "@hapi/hapi": "^20.2.1",
-    "@hapi/wreck": "^17.1.0",
-    "@hapi/yar": "^10.1.1",
-    "keycloak-connect": "^15.0.2",
-    "lodash": "^4.17.21"
-  },
+  "dependencies": {},
   "devDependencies": {}
 }
