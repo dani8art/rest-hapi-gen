@@ -25,7 +25,7 @@ const init = async () => {
   const commonConfig = { basePath: '/api/v1', tls: false, rootPathRedirect: true };
 
   const commonAuthConfig = {
-    enabled: true,
+    enabled: false,
     server: { url: process.env['AUTH_SERVER_URL'], realm: process.env['AUTH_SERVER_REALM'] },
     client: { id: process.env['AUTH_CLIENT_ID'], secret: process.env['AUTH_CLIENT_SECRET'] },
   };
