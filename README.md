@@ -61,7 +61,7 @@ const RestHapiGen = require('rest-hapi-gen');
 | auth.session.enabled              | `boolean`  | `Optional` Whether to enable session or just bearer only auth mechanism. Default: `true`                                           |
 | auth.session.password             | `string`   | `Optional` The session encryption password. Default: Random generated                                                              |
 | basePath                          | `string`   | `Optional` Base path where the CRUD endpoints are attached. Default: `'/'`                                                         |
-| collection.name                   | `string`   | `Required` Name for the collection that is created.                                                                                |
+| collection.name                   | `string`   | `Required` Name for the collection that is going to be created.                                                                    |
 | collection.pages.limit            | `number`   | `Optional` Default max limit for collection queries, it will be overrided if the API user uses `collection?limit=x`. Default: `10` |
 | health.enabled                    | `boolean`  | `Optional` Whether to enable a health endpoint. Default: `true`                                                                    |
 | health.path                       | `string`   | `Optional` Target path where the health endpoint will be set, it must start with `/`. Default: `/_healthz`                         |
