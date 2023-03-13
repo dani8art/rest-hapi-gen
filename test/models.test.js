@@ -99,6 +99,7 @@ describe('Models Utils Tests', () => {
       const validObject = {
         _embedded: { tests: [{ test: 'test' }] },
         _links: { self: { href: 'test' } },
+        _pages: { limit: 10, page: 1, count: 10 },
       };
       const linksNotValidObject = {
         _embedded: { tests: [{ test: 'test' }] },
@@ -108,12 +109,20 @@ describe('Models Utils Tests', () => {
         _embedded: { hello: [{ test: 'test' }] },
         _links: { self: { href: 'test' } },
       };
+      const pagesNotValidObject = {
+        _embedded: { tests: [{ test: 'test' }] },
+        _links: { self: { href: 'test' } },
+        _pages: { limit: -10, page: -1, count: 10 },
+      };
 
       const extendedSchema = models.buildCollectionSchema(collectionName, schema);
 
       expect(extendedSchema.validate(validObject).error).toBe(undefined);
       expect(extendedSchema.validate(linksNotValidObject).error.message).toBe('"_links.self" must be of type object');
       expect(extendedSchema.validate(embeddedNotValidObject).error.message).toBe('"_embedded.hello" is not allowed');
+      expect(extendedSchema.validate(pagesNotValidObject).error.message).toBe(
+        '"_pages.limit" must be greater than or equal to 1'
+      );
     });
   });
 });

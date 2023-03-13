@@ -27,6 +27,15 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "testPathIgnorePatterns" : [
+      "/node_modules/",
+      ".*\\.mother\\.js"
+    ],
+    "coveragePathIgnorePatterns" : [
+      "/node_modules/",
+      "/dev/",
+      ".*\\.mother\\.js"
+    ],
     "watchPathIgnorePatterns": [
       "/node_modules/",
       "/dev/"
@@ -41,9 +50,14 @@
   "license": "MIT",
   "dependencies": {
     "@hapi/boom": "^10.0.0",
+    "@hapi/wreck": "^18.0.0",
+    "@hapi/yar": "^11.0.0",
     "joi": "^17.7.0",
     "joigoose": "^8.0.2",
-    "mongoose": "^6.7.2"
+    "keycloak-connect": "^20.0.2",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.7.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.2.0",

@@ -14,6 +14,7 @@ hateoas.addCollectionLinks.mockImplementation((jsonDocuments) => jsonDocuments);
 hateoas.addResourceLinks.mockImplementation((jsonDocument) => jsonDocument);
 
 const builders = require('../../lib/handler/builders');
+const { applyToDefaults } = require('@hapi/hoek');
 
 describe('Handler Builder Tests', () => {
   const mockResource = { testresource: 'testresource' };
@@ -54,6 +55,8 @@ describe('Handler Builder Tests', () => {
       throw new Error(message || 'deleteOne error');
     });
 
+  const countDocumentsMock = jest.fn().mockReturnValue(1);
+
   const mockCustomResource = { customHandler: 'customHandler' };
   const mockCustomCollection = [mockCustomResource];
   const customHandlerMock = jest.fn().mockReturnValue(mockCustomResource);
@@ -65,12 +68,13 @@ describe('Handler Builder Tests', () => {
       save: !errors ? saveMock : saveMockError(message),
       updateOne: !errors ? updateOneMock : updateOneMockError(message),
       deleteOne: !errors ? deleteOneMock : deleteOneMockError(message),
+      countDocuments: countDocumentsMock,
     };
   });
 
   const mockRequest = { query: { name: 'fuffy' } };
   const mockH = {};
-  const options = { test: 'options' };
+  const options = { test: 'options', collection: { name: 'name' } };
 
   beforeEach(() => jest.clearAllMocks());
 
@@ -81,9 +85,32 @@ describe('Handler Builder Tests', () => {
 
       const actualResponse = await actualHandler(mockRequest, mockH);
 
-      expect(model.find).toHaveBeenCalledWith({ name: 'fuffy' });
+      expect(model.countDocuments).toHaveBeenCalledWith({ name: 'fuffy' });
+      expect(model.find).toHaveBeenCalledWith({ name: 'fuffy' }, null, { limit: 10, skip: 0 });
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource, 0, mockCollection);
-      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCollection, options);
+      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCollection, mockRequest, options.collection.name, {
+        count: 1,
+        limit: 10,
+        page: 1,
+      });
+      expect(actualResponse).toStrictEqual(mockCollection);
+    });
+
+    it('when different page then should return the default handler and skip in mongo query', async () => {
+      const model = mockModel();
+      const actualHandler = builders.getCollectionHandlerBuilder(model, options);
+
+      const pagedRequest = { query: { ...mockRequest.query, page: 2, limit: 2 } };
+      const actualResponse = await actualHandler(pagedRequest, mockH);
+
+      expect(model.countDocuments).toHaveBeenCalledWith({ name: 'fuffy' });
+      expect(model.find).toHaveBeenCalledWith({ name: 'fuffy' }, null, { limit: 2, skip: 2 });
+      expect(models.documentToJson).toHaveBeenCalledWith(mockResource, 0, mockCollection);
+      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCollection, pagedRequest, options.collection.name, {
+        count: 1,
+        limit: 2,
+        page: 2,
+      });
       expect(actualResponse).toStrictEqual(mockCollection);
     });
 
@@ -100,19 +127,23 @@ describe('Handler Builder Tests', () => {
         query: { name: '{"$lte": "fuffy"}', tags: ['vaporizing', 'talking'] },
         parsedQuery: { name: { $lte: 'fuffy' }, tags: ['vaporizing', 'talking'] },
       },
+      {
+        query: { name: '{"$lte": "fuffy"}', tags: ['vaporizing', 'talking'], limit: '10', page: '1' },
+        parsedQuery: { name: { $lte: 'fuffy' }, tags: ['vaporizing', 'talking'] },
+      },
     ].forEach((params, i) => {
       it(`should parse hapi query to mongoose query parms[${i}]`, async () => {
         const model = mockModel();
         const actualHandler = builders.getCollectionHandlerBuilder(model, options);
 
-        mockRequest.query = params.query;
-        const actualResponse = await actualHandler(mockRequest, mockH);
+        const request = applyToDefaults({}, { query: params.query }, { nullOverride: true });
+        await actualHandler(request, mockH);
 
-        expect(model.find).toHaveBeenCalledWith(params.parsedQuery);
+        expect(model.find).toHaveBeenCalledWith(params.parsedQuery, null, { limit: 10, skip: 0 });
       });
     });
 
-    it('should return the the custom handler', async () => {
+    it('should return the custom handler', async () => {
       const model = mockModel();
       const customOptions = { ...options, handler: customHandlerMock };
       const actualHandler = builders.getCollectionHandlerBuilder(model, customOptions);
@@ -122,7 +153,12 @@ describe('Handler Builder Tests', () => {
       expect(model.find).not.toHaveBeenCalled();
       expect(customHandlerMock).toHaveBeenCalled();
       expect(models.documentToJson).toHaveBeenCalledWith(mockCustomResource, 0, mockCustomCollection);
-      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCustomCollection, customOptions);
+      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(
+        mockCustomCollection,
+        mockRequest,
+        options.collection.name,
+        { count: 1, limit: 10, page: 1 }
+      );
       expect(actualResponse).toStrictEqual(mockCustomCollection);
     });
 
@@ -150,7 +186,7 @@ describe('Handler Builder Tests', () => {
 
       expect(model.findOne).toHaveBeenCalled();
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, options);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockResource);
     });
 
@@ -164,7 +200,7 @@ describe('Handler Builder Tests', () => {
       expect(customHandlerMock).toHaveBeenCalled();
       expect(model.findOne).not.toHaveBeenCalled();
       expect(models.documentToJson).toHaveBeenCalledWith(mockCustomResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, customOptions);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockCustomResource);
     });
 
@@ -207,7 +243,7 @@ describe('Handler Builder Tests', () => {
       expect(model).toHaveBeenCalledTimes(1);
       expect(modelInstance.save).toHaveBeenCalledTimes(1);
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, options);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockResource);
     });
 
@@ -223,7 +259,7 @@ describe('Handler Builder Tests', () => {
       expect(modelInstance.save).toHaveBeenCalledTimes(0);
       expect(customHandlerMock).toHaveBeenCalledTimes(1);
       expect(models.documentToJson).toHaveBeenCalledWith(mockCustomResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, customOptions);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockCustomResource);
     });
 
@@ -253,7 +289,7 @@ describe('Handler Builder Tests', () => {
       expect(models.documentToJson).not.toHaveBeenCalledWith(mockResource);
       expect(hateoas.addResourceLinks).not.toHaveBeenCalledWith(mockResource, options);
       expect(actualResponse).toStrictEqual(
-        'Duplicate key error. [collection = undefined, key = unknown]. The given value already exists: unknown'
+        'Duplicate key error. [collection = name, key = unknown]. The given value already exists: unknown'
       );
     });
   });
@@ -269,7 +305,7 @@ describe('Handler Builder Tests', () => {
       expect(updateOneMock).toHaveBeenCalledWith({ _id: mockRequest.params.identifier }, mockRequest.payload);
       expect(findOneMock).toHaveBeenCalledWith({ _id: mockRequest.params.identifier });
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, options);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockResource);
     });
 
@@ -285,7 +321,7 @@ describe('Handler Builder Tests', () => {
       expect(findOneMock).toHaveBeenCalledTimes(0);
       expect(customHandlerMock).toHaveBeenCalled();
       expect(models.documentToJson).toHaveBeenCalledWith(mockCustomResource);
-      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, customOptions);
+      expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockCustomResource);
     });
 

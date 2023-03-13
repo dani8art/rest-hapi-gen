@@ -6,30 +6,30 @@ describe('Description Builders Tests', () => {
   it('#getCollectionDescriptionBuilder should return the proper description', () => {
     const actualDecription = builders.getCollectionDescriptionBuilder(collectionName);
 
-    expect(actualDecription).toBe('Get all tests');
+    expect(actualDecription).toBe('Gets all tests');
   });
 
   it('#getResourceDescriptionBuilder should return the proper description', () => {
     const actualDecription = builders.getResourceDescriptionBuilder(collectionName);
 
-    expect(actualDecription).toBe('Get an existing tests');
+    expect(actualDecription).toBe('Gets an existing tests');
   });
 
   it('#createResourceDescriptionBuilder should return the proper description', () => {
     const actualDecription = builders.createResourceDescriptionBuilder(collectionName);
 
-    expect(actualDecription).toBe('Create a new tests');
+    expect(actualDecription).toBe('Creates a new tests');
   });
 
   it('#updateResourceDescriptionBuilder should return the proper description', () => {
     const actualDecription = builders.updateResourceDescriptionBuilder(collectionName);
 
-    expect(actualDecription).toBe('Update an existing tests');
+    expect(actualDecription).toBe('Updates an existing tests');
   });
 
   it('#deleteResourceDescriptionBuilder should return the proper description', () => {
     const actualDecription = builders.deleteResourceDescriptionBuilder(collectionName);
 
-    expect(actualDecription).toBe('Delete an existing tests');
+    expect(actualDecription).toBe('Deletes an existing tests');
   });
 });

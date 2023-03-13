@@ -11,7 +11,25 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/dev/app.js"
+      "program": "${workspaceFolder}/dev/app.js",
+      "env": {
+        "AUTH_SERVER_URL": "<value>",
+        "AUTH_SERVER_REALM": "<value>",
+        "AUTH_CLIENT_ID": "<value>",
+        "AUTH_CLIENT_SECRET": "<value>"
+      }
+    },
+    {
+      "name": "debug-jest-tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/.bin/jest",
+        "--runInBand"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
   ]
 }

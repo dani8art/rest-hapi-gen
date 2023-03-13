@@ -14,22 +14,29 @@ const init = async () => {
 
   const server = Hapi.server({ port: 4000 });
 
-  const hapiSwaggerConf = {
+  const hapiSwaggerConfig = {
     jsonPath: '/api/v1/oas.json',
     basePath: '/api/v1',
     documentationPath: '/api/v1/docs',
-    info: {
-      title: 'Pets API Documentation',
-      version: Pack.version,
-    },
+    info: { title: 'Pets API Documentation', version: Pack.version },
     grouping: 'tags',
   };
 
-  const genConf = {
-    collectionName: 'pets',
-    basePath: '/api/v1',
+  const commonConfig = { basePath: '/api/v1', tls: false, rootPathRedirect: true };
+
+  const commonAuthConfig = {
+    enabled: true,
+    server: { url: process.env['AUTH_SERVER_URL'], realm: process.env['AUTH_SERVER_REALM'] },
+    client: { id: process.env['AUTH_CLIENT_ID'], secret: process.env['AUTH_CLIENT_SECRET'] },
+  };
+
+  const petsConfig = {
+    ...commonConfig,
+    collection: { name: 'pets', pages: { limit: 2 } },
     schema: Joi.object({
-      name: Joi.string().meta({ _mongoose: { unique: true } }).required(),
+      name: Joi.string()
+        .meta({ _mongoose: { unique: true } })
+        .required(),
       tags: Joi.array().items(Joi.string()).default([]),
     }),
     //// You can override actions and properties that are built automatically
@@ -41,13 +48,26 @@ const init = async () => {
     //     },
     //   },
     // },
+    auth: { ...commonAuthConfig },
+  };
+
+  const tagsConfig = {
+    ...commonConfig,
+    collection: { name: 'tags' },
+    schema: Joi.object({
+      name: Joi.string()
+        .meta({ _mongoose: { unique: true } })
+        .required(),
+    }),
+    auth: { ...commonAuthConfig, scope: { read: ['tags:ro'], write: ['tags:rw'] } },
   };
 
   await server.register([
     Inert,
     Vision,
-    { plugin: HapiSwagger, options: hapiSwaggerConf },
-    { plugin: RestHapiGen, options: genConf },
+    { plugin: HapiSwagger, options: hapiSwaggerConfig },
+    { plugin: RestHapiGen, options: petsConfig },
+    { plugin: RestHapiGen, options: tagsConfig },
   ]);
 
   await server.start();
