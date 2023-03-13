@@ -47,31 +47,32 @@ const RestHapiGen = require('rest-hapi-gen');
 
 ## Plugin configuration
 
-| Option                            | Type       | Description                                                                                                 |
-| --------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
-| auth.enabled                      | `boolean`  | `Optional` Whether to activate auth or not. Default: `false`                                                |
-| auth.client.id                    | `string`   | `Required` OAuth 2.0 client id. It is required if `$.auth.enabled === true`                                 |
-| auth.client.secret                | `string`   | `Required` OAuth 2.0 client secret. It is required if `$.auth.enabled === true`                             |
-| auth.client.kind                  | `string`   | `Optional` OAuth 2.0 server kind. Default: `keycloak`                                                       |
-| auth.scope.read                   | `string[]` | `Optional` OAuth 2.0 required scope list to access read actions. Default `false`                            |
-| auth.scope.write                  | `string[]` | `Optional` OAuth 2.0 required scope list to access write actions. Default `false`                           |
-| auth.server.url                   | `string`   | `Required` OAuth 2.0 server. It is required if `$.auth.enabled === true`                                    |
-| auth.server.realm                 | `string`   | `Optional` OAuth 2.0 server realm. Default: `master`                                                        |
-| auth.session.cookie.name          | `string`   | `Optional` Name for the session cookie. Default: `rest-hapi-gen-session`                                    |
-| auth.session.enabled              | `boolean`  | `Optional` Whether to enable session or just bearer only auth mechanism. Default: `true`                    |
-| auth.session.password             | `string`   | `Optional` The session encryption password. Default: Random generated                                       |
-| basePath                          | `string`   | `Optional` Base path where the CRUD endpoints are attached. Default: `'/'`                                  |
-| collection.name                   | `string`   | `Required` Name for the collection that is created.                                                         |
-| health.enabled                    | `boolean`  | `Optional` Whether to enable a health endpoint. Default: `true`                                             |
-| health.path                       | `string`   | `Optional` Target path where the health endpoint will be set, it must start with `/`. Default: `/_healthz`. |
-| overrides.actions.GET_COLLECTION  | `Function` | `Optional` Async function that will override the default handler for GET_COLLECTION action.                 |
-| overrides.actions.GET_RESOURCE    | `Function` | `Optional` Async function that will override the default handler for GET_RESOURCE action.                   |
-| overrides.actions.CREATE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for CREATE_RESOURCE action.                |
-| overrides.actions.UPDATE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for UPDATE_RESOURCE action.                |
-| overrides.actions.DELETE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for DELETE_RESOURCE action.                |
-| rootPathRedirect                  | `boolean`  | `Optional` Whether redirect from root path (`/`) to `basePath` path. Default: `false`                       |
-| schema                            | `Joi`      | `Required` Joi schema for the collection that is created.                                                   |
-| tls                               | `boolean`  | `Optional` Whether the server is using TLS externally/internally or not. Default: `false`                   |
+| Option                            | Type       | Description                                                                                                                        |
+| --------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| auth.enabled                      | `boolean`  | `Optional` Whether to activate auth or not. Default: `false`                                                                       |
+| auth.client.id                    | `string`   | `Required` OAuth 2.0 client id. It is required if `$.auth.enabled === true`                                                        |
+| auth.client.secret                | `string`   | `Required` OAuth 2.0 client secret. It is required if `$.auth.enabled === true`                                                    |
+| auth.client.kind                  | `string`   | `Optional` OAuth 2.0 server kind. Default: `keycloak`                                                                              |
+| auth.scope.read                   | `string[]` | `Optional` OAuth 2.0 required scope list to access read actions. Default `false`                                                   |
+| auth.scope.write                  | `string[]` | `Optional` OAuth 2.0 required scope list to access write actions. Default `false`                                                  |
+| auth.server.url                   | `string`   | `Required` OAuth 2.0 server. It is required if `$.auth.enabled === true`                                                           |
+| auth.server.realm                 | `string`   | `Optional` OAuth 2.0 server realm. Default: `master`                                                                               |
+| auth.session.cookie.name          | `string`   | `Optional` Name for the session cookie. Default: `rest-hapi-gen-session`                                                           |
+| auth.session.enabled              | `boolean`  | `Optional` Whether to enable session or just bearer only auth mechanism. Default: `true`                                           |
+| auth.session.password             | `string`   | `Optional` The session encryption password. Default: Random generated                                                              |
+| basePath                          | `string`   | `Optional` Base path where the CRUD endpoints are attached. Default: `'/'`                                                         |
+| collection.name                   | `string`   | `Required` Name for the collection that is created.                                                                                |
+| collection.pages.limit            | `number`   | `Optional` Default max limit for collection queries, it will be overrided if the API user uses `collection?limit=x`. Default: `10` |
+| health.enabled                    | `boolean`  | `Optional` Whether to enable a health endpoint. Default: `true`                                                                    |
+| health.path                       | `string`   | `Optional` Target path where the health endpoint will be set, it must start with `/`. Default: `/_healthz`                         |
+| overrides.actions.GET_COLLECTION  | `Function` | `Optional` Async function that will override the default handler for GET_COLLECTION action                                         |
+| overrides.actions.GET_RESOURCE    | `Function` | `Optional` Async function that will override the default handler for GET_RESOURCE action                                           |
+| overrides.actions.CREATE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for CREATE_RESOURCE action                                        |
+| overrides.actions.UPDATE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for UPDATE_RESOURCE action                                        |
+| overrides.actions.DELETE_RESOURCE | `Function` | `Optional` Async function that will override the default handler for DELETE_RESOURCE action                                        |
+| rootPathRedirect                  | `boolean`  | `Optional` Whether redirect from root path (`/`) to `basePath` path. Default: `false`                                              |
+| schema                            | `Joi`      | `Required` Joi schema for the collection that is created.                                                                          |
+| tls                               | `boolean`  | `Optional` Whether the server is using TLS externally/internally or not. Default: `false`                                          |
 
 ### Override an action
 

@@ -14,6 +14,7 @@ hateoas.addCollectionLinks.mockImplementation((jsonDocuments) => jsonDocuments);
 hateoas.addResourceLinks.mockImplementation((jsonDocument) => jsonDocument);
 
 const builders = require('../../lib/handler/builders');
+const { applyToDefaults } = require('@hapi/hoek');
 
 describe('Handler Builder Tests', () => {
   const mockResource = { testresource: 'testresource' };
@@ -54,6 +55,8 @@ describe('Handler Builder Tests', () => {
       throw new Error(message || 'deleteOne error');
     });
 
+  const countDocumentsMock = jest.fn().mockReturnValue(1);
+
   const mockCustomResource = { customHandler: 'customHandler' };
   const mockCustomCollection = [mockCustomResource];
   const customHandlerMock = jest.fn().mockReturnValue(mockCustomResource);
@@ -65,6 +68,7 @@ describe('Handler Builder Tests', () => {
       save: !errors ? saveMock : saveMockError(message),
       updateOne: !errors ? updateOneMock : updateOneMockError(message),
       deleteOne: !errors ? deleteOneMock : deleteOneMockError(message),
+      countDocuments: countDocumentsMock,
     };
   });
 
@@ -81,9 +85,32 @@ describe('Handler Builder Tests', () => {
 
       const actualResponse = await actualHandler(mockRequest, mockH);
 
-      expect(model.find).toHaveBeenCalledWith({ name: 'fuffy' });
+      expect(model.countDocuments).toHaveBeenCalledWith({ name: 'fuffy' });
+      expect(model.find).toHaveBeenCalledWith({ name: 'fuffy' }, null, { limit: 10, skip: 0 });
       expect(models.documentToJson).toHaveBeenCalledWith(mockResource, 0, mockCollection);
-      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCollection, mockRequest, options.collection.name);
+      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCollection, mockRequest, options.collection.name, {
+        count: 1,
+        limit: 10,
+        page: 1,
+      });
+      expect(actualResponse).toStrictEqual(mockCollection);
+    });
+
+    it('when different page then should return the default handler and skip in mongo query', async () => {
+      const model = mockModel();
+      const actualHandler = builders.getCollectionHandlerBuilder(model, options);
+
+      const pagedRequest = { query: { ...mockRequest.query, page: 2, limit: 2 } };
+      const actualResponse = await actualHandler(pagedRequest, mockH);
+
+      expect(model.countDocuments).toHaveBeenCalledWith({ name: 'fuffy' });
+      expect(model.find).toHaveBeenCalledWith({ name: 'fuffy' }, null, { limit: 2, skip: 2 });
+      expect(models.documentToJson).toHaveBeenCalledWith(mockResource, 0, mockCollection);
+      expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(mockCollection, pagedRequest, options.collection.name, {
+        count: 1,
+        limit: 2,
+        page: 2,
+      });
       expect(actualResponse).toStrictEqual(mockCollection);
     });
 
@@ -100,19 +127,23 @@ describe('Handler Builder Tests', () => {
         query: { name: '{"$lte": "fuffy"}', tags: ['vaporizing', 'talking'] },
         parsedQuery: { name: { $lte: 'fuffy' }, tags: ['vaporizing', 'talking'] },
       },
+      {
+        query: { name: '{"$lte": "fuffy"}', tags: ['vaporizing', 'talking'], limit: '10', page: '1' },
+        parsedQuery: { name: { $lte: 'fuffy' }, tags: ['vaporizing', 'talking'] },
+      },
     ].forEach((params, i) => {
       it(`should parse hapi query to mongoose query parms[${i}]`, async () => {
         const model = mockModel();
         const actualHandler = builders.getCollectionHandlerBuilder(model, options);
 
-        mockRequest.query = params.query;
-        const actualResponse = await actualHandler(mockRequest, mockH);
+        const request = applyToDefaults({}, { query: params.query }, { nullOverride: true });
+        await actualHandler(request, mockH);
 
-        expect(model.find).toHaveBeenCalledWith(params.parsedQuery);
+        expect(model.find).toHaveBeenCalledWith(params.parsedQuery, null, { limit: 10, skip: 0 });
       });
     });
 
-    it('should return the the custom handler', async () => {
+    it('should return the custom handler', async () => {
       const model = mockModel();
       const customOptions = { ...options, handler: customHandlerMock };
       const actualHandler = builders.getCollectionHandlerBuilder(model, customOptions);
@@ -125,7 +156,8 @@ describe('Handler Builder Tests', () => {
       expect(hateoas.addCollectionLinks).toHaveBeenCalledWith(
         mockCustomCollection,
         mockRequest,
-        options.collection.name
+        options.collection.name,
+        { count: 1, limit: 10, page: 1 }
       );
       expect(actualResponse).toStrictEqual(mockCustomCollection);
     });
