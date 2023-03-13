@@ -1,6 +1,6 @@
 {
   "name": "rest-hapi-gen",
-  "version": "2.5.1",
+  "version": "3.0.0",
   "description": "RESTHapi Gen is a @hapijs/hapi plugin which generates a CRUD RESTful API from a given @hapijs/joi model.",
   "keywords": [
     "hapi",
@@ -27,11 +27,11 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "testPathIgnorePatterns" : [
+    "testPathIgnorePatterns": [
       "/node_modules/",
       ".*\\.mother\\.js"
     ],
-    "coveragePathIgnorePatterns" : [
+    "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/dev/",
       ".*\\.mother\\.js"
