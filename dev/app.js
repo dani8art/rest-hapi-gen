@@ -12,7 +12,7 @@ const RestHapiGen = require('../lib/index');
 const init = async () => {
   await Mongoose.connect('mongodb://localhost:27017/testdb', { useNewUrlParser: true, useUnifiedTopology: true });
 
-  const server = Hapi.server({ port: 4000 });
+  const server = Hapi.server({ port: 4000, debug: { request: ['*'], log: ['*'] } });
 
   const hapiSwaggerConfig = {
     jsonPath: '/api/v1/oas.json',

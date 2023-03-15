@@ -72,7 +72,12 @@ describe('Models Utils Tests', () => {
     it('should return the correct schema', () => {
       const schema = Joi.object({ test: Joi.string() });
       const collectionName = 'test';
-      const validObject = { test: 'test', _id: '5db998d3afa2e2a47c1090be', __v: 0, _links: {} };
+      const validObject = {
+        test: 'test',
+        _id: '5db998d3afa2e2a47c1090be',
+        __v: 0,
+        _links: { self: { href: 'http://test.local/self' }, collection: { href: 'http://test.local/collection' } },
+      };
       const idNotValidObject = { test: 'test', _id: 'hello', __v: 0, _links: {} };
       const missingIdNotValidObject = { test: 'test', __v: 0, _links: {} };
       const vNotValidObject = { test: 'test', _id: '5db998d3afa2e2a47c1090be', __v: '0s', _links: {} };
