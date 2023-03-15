@@ -16,7 +16,6 @@ const init = async () => {
 
   const hapiSwaggerConfig = {
     jsonPath: '/api/v1/oas.json',
-    basePath: '/api/v1',
     documentationPath: '/api/v1/docs',
     info: { title: 'Pets API Documentation', version: Pack.version },
     grouping: 'tags',
