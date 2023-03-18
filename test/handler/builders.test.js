@@ -214,7 +214,7 @@ describe('Handler Builder Tests', () => {
       expect(model.findOne).toHaveBeenCalled();
       expect(models.documentToJson).not.toHaveBeenCalledWith(mockResource);
       expect(hateoas.addResourceLinks).not.toHaveBeenCalledWith(mockResource, options);
-      expect(actualResponse).toStrictEqual('Not found resource with notFound');
+      expect(actualResponse).toStrictEqual('Not found name for [id = notFound]');
     });
 
     it('should return implementation error', async () => {
@@ -309,7 +309,7 @@ describe('Handler Builder Tests', () => {
       expect(actualResponse).toStrictEqual(mockResource);
     });
 
-    it('should return the the custom handler', async () => {
+    it('should return the custom handler', async () => {
       const model = mockModel();
       const customOptions = { ...options, handler: customHandlerMock };
       const actualHandler = builders.getResourceHandlerBuilder(model, customOptions);
@@ -323,6 +323,20 @@ describe('Handler Builder Tests', () => {
       expect(models.documentToJson).toHaveBeenCalledWith(mockCustomResource);
       expect(hateoas.addResourceLinks).toHaveBeenCalledWith(mockCustomResource, mockRequest, '_id');
       expect(actualResponse).toStrictEqual(mockCustomResource);
+    });
+
+    it('When no document is found then return not found error', async () => {
+      const model = mockModel();
+      const actualHandler = builders.updateResourceHandlerBuilder(model, options);
+
+      const mockRequest = { params: { identifier: 'notFound' }, payload: 'payload' };
+      const actualResponse = await actualHandler(mockRequest, mockH);
+
+      expect(model.updateOne).toHaveBeenCalledWith({ _id: mockRequest.params.identifier }, mockRequest.payload);
+      expect(model.findOne).toHaveBeenCalledWith({ _id: mockRequest.params.identifier });
+      expect(models.documentToJson).not.toHaveBeenCalledWith(mockResource);
+      expect(hateoas.addResourceLinks).not.toHaveBeenCalledWith(mockResource, options);
+      expect(actualResponse).toStrictEqual('Not found name for [id = notFound]');
     });
 
     it('should return error', async () => {
