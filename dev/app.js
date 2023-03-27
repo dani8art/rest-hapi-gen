@@ -17,8 +17,26 @@ const init = async () => {
   const hapiSwaggerConfig = {
     jsonPath: '/api/v1/oas.json',
     documentationPath: '/api/v1/docs',
+    swaggerUIPath: '/api/v1/',
+    routesBasePath: '/api/v1/',
     info: { title: 'Pets API Documentation', version: Pack.version },
     grouping: 'tags',
+    securityDefinitions: {
+      oauth2: {
+        type: 'oauth2',
+        description:
+          'This authentication mechanism redirects to the authorization server and optains an access token in order to authenticate users',
+        flow: 'accessCode',
+        authorizationUrl: `${process.env['AUTH_SERVER_URL']}/realms/${process.env['AUTH_SERVER_REALM']}/protocol/openid-connect/auth`,
+        tokenUrl: `${process.env['AUTH_SERVER_URL']}/realms/${process.env['AUTH_SERVER_REALM']}/protocol/openid-connect/token`,
+        scopes: {
+          openid: 'The OpenID Connect built-in scope',
+          email: 'OpenID Connect built-in scope: email',
+          profile: 'OpenID Connect built-in scope: profile',
+        },
+      },
+    },
+    security: [{ oauth2: [] }],
   };
 
   const commonConfig = { basePath: '/api/v1', tls: false, rootPathRedirect: true };
