@@ -107,6 +107,26 @@ describe('Response Builders Tests', () => {
     expect(actualResponseValidation).toStrictEqual(expectedResponseValidation);
   });
 
+  it('and auth is enabled then #getCollectionResponseBuilder should return the proper response validation', () => {
+    const expectedResponseValidation = {
+      status: {
+        200: { tests: 'testSchema' },
+        401: {
+          attributes: { error: 'string.required', realm: 'string.required' },
+          error: 'string.required',
+          message: 'string.required',
+          statusCode: 'number.valid.401.required',
+        },
+        403: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.403.required' },
+        500: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.500.required' },
+      },
+    };
+
+    const actualResponseValidation = builders.getCollectionResponseBuilder(collectionName, schema, true);
+
+    expect(actualResponseValidation).toStrictEqual(expectedResponseValidation);
+  });
+
   it('#getResourceResponseBuilder should return the proper response validation', () => {
     const expectedResponseValidation = {
       status: {
@@ -121,6 +141,27 @@ describe('Response Builders Tests', () => {
     expect(actualResponseValidation).toStrictEqual(expectedResponseValidation);
   });
 
+  it('and auth is enabled then #getResourceResponseBuilder should return the proper response validation', () => {
+    const expectedResponseValidation = {
+      status: {
+        200: 'testSchema',
+        401: {
+          attributes: { error: 'string.required', realm: 'string.required' },
+          error: 'string.required',
+          message: 'string.required',
+          statusCode: 'number.valid.401.required',
+        },
+        403: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.403.required' },
+        404: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.404.required' },
+        500: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.500.required' },
+      },
+    };
+
+    const actualResponseValidation = builders.getResourceResponseBuilder(collectionName, schema, true);
+
+    expect(actualResponseValidation).toStrictEqual(expectedResponseValidation);
+  });
+
   it('#createResourceResponseBuilder should return the proper response validation', () => {
     const expectedResponseValidation = {
       status: {
@@ -131,6 +172,27 @@ describe('Response Builders Tests', () => {
     };
 
     const actualResponseValidation = builders.createResourceResponseBuilder(collectionName, schema);
+
+    expect(actualResponseValidation).toStrictEqual(expectedResponseValidation);
+  });
+
+  it('and auth is enabled #createResourceResponseBuilder should return the proper response validation', () => {
+    const expectedResponseValidation = {
+      status: {
+        200: 'testSchema',
+        401: {
+          attributes: { error: 'string.required', realm: 'string.required' },
+          error: 'string.required',
+          message: 'string.required',
+          statusCode: 'number.valid.401.required',
+        },
+        403: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.403.required' },
+        400: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.400.required' },
+        500: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.500.required' },
+      },
+    };
+
+    const actualResponseValidation = builders.createResourceResponseBuilder(collectionName, schema, true);
 
     expect(actualResponseValidation).toStrictEqual(expectedResponseValidation);
   });
@@ -150,6 +212,28 @@ describe('Response Builders Tests', () => {
     expect(actualResponseValidation).toStrictEqual(expectedResponseValidation);
   });
 
+  it('and auth is enabled then #updateResourceResponseBuilder should return the proper response validation', () => {
+    const expectedResponseValidation = {
+      status: {
+        200: 'testSchema',
+        400: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.400.required' },
+        401: {
+          attributes: { error: 'string.required', realm: 'string.required' },
+          error: 'string.required',
+          message: 'string.required',
+          statusCode: 'number.valid.401.required',
+        },
+        403: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.403.required' },
+        404: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.404.required' },
+        500: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.500.required' },
+      },
+    };
+
+    const actualResponseValidation = builders.updateResourceResponseBuilder(collectionName, schema, true);
+
+    expect(actualResponseValidation).toStrictEqual(expectedResponseValidation);
+  });
+
   it('#deleteResourceResponseBuilder should return the proper response validation', () => {
     const actualResponseValidation = builders.deleteResourceResponseBuilder(collectionName, schema);
 
@@ -157,6 +241,25 @@ describe('Response Builders Tests', () => {
     expect(actualResponseValidation).toStrictEqual({
       status: {
         200: { acknowledged: 'boolean.required', deletedCount: 'number.min.0.required' },
+        500: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.500.required' },
+      },
+    });
+  });
+
+  it('and auth is enabled then #deleteResourceResponseBuilder should return the proper response validation', () => {
+    const actualResponseValidation = builders.deleteResourceResponseBuilder(collectionName, schema, true);
+
+    expect(actualResponseValidation.stack.join('.')).toEqual('object.label.description');
+    expect(actualResponseValidation).toStrictEqual({
+      status: {
+        200: { acknowledged: 'boolean.required', deletedCount: 'number.min.0.required' },
+        401: {
+          attributes: { error: 'string.required', realm: 'string.required' },
+          error: 'string.required',
+          message: 'string.required',
+          statusCode: 'number.valid.401.required',
+        },
+        403: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.403.required' },
         500: { error: 'string.required', message: 'string.required', statusCode: 'number.valid.500.required' },
       },
     });
