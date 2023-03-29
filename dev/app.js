@@ -14,6 +14,7 @@ const init = async () => {
 
   const server = Hapi.server({ port: 4000, debug: { request: ['*'], log: ['*'] } });
 
+  const authEnabled = false;
   const hapiSwaggerConfig = {
     jsonPath: '/api/v1/oas.json',
     documentationPath: '/api/v1/docs',
@@ -21,28 +22,30 @@ const init = async () => {
     routesBasePath: '/api/v1/',
     info: { title: 'Pets API Documentation', version: Pack.version },
     grouping: 'tags',
-    securityDefinitions: {
-      oauth2: {
-        type: 'oauth2',
-        description:
-          'This authentication mechanism redirects to the authorization server and optains an access token in order to authenticate users',
-        flow: 'accessCode',
-        authorizationUrl: `${process.env['AUTH_SERVER_URL']}/realms/${process.env['AUTH_SERVER_REALM']}/protocol/openid-connect/auth`,
-        tokenUrl: `${process.env['AUTH_SERVER_URL']}/realms/${process.env['AUTH_SERVER_REALM']}/protocol/openid-connect/token`,
-        scopes: {
-          openid: 'The OpenID Connect built-in scope',
-          email: 'OpenID Connect built-in scope: email',
-          profile: 'OpenID Connect built-in scope: profile',
-        },
-      },
-    },
-    security: [{ oauth2: [] }],
+    securityDefinitions: authEnabled
+      ? {
+          oauth2: {
+            type: 'oauth2',
+            description:
+              'This authentication mechanism redirects to the authorization server and optains an access token in order to authenticate users',
+            flow: 'accessCode',
+            authorizationUrl: `${process.env['AUTH_SERVER_URL']}/realms/${process.env['AUTH_SERVER_REALM']}/protocol/openid-connect/auth`,
+            tokenUrl: `${process.env['AUTH_SERVER_URL']}/realms/${process.env['AUTH_SERVER_REALM']}/protocol/openid-connect/token`,
+            scopes: {
+              openid: 'OpenID Connect built-in scope',
+              email: 'OpenID Connect built-in scope: email',
+              profile: 'OpenID Connect built-in scope: profile',
+            },
+          },
+        }
+      : undefined,
+    security: authEnabled ? [{ oauth2: [] }] : undefined,
   };
 
   const commonConfig = { basePath: '/api/v1', tls: false, rootPathRedirect: true };
 
   const commonAuthConfig = {
-    enabled: false,
+    enabled: authEnabled,
     server: { url: process.env['AUTH_SERVER_URL'], realm: process.env['AUTH_SERVER_REALM'] },
     client: { id: process.env['AUTH_CLIENT_ID'], secret: process.env['AUTH_CLIENT_SECRET'] },
   };
